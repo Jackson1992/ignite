@@ -166,7 +166,11 @@ public class IgnitionEx {
     private static final Collection<IgnitionListener> lsnrs = new GridConcurrentHashSet<>(4);
 
     /** */
-    private static final ThreadLocal<String> GRID_NAME_THREAD_LOC = new ThreadLocal<>();
+    private static final ThreadLocal<LocalGridName> GRID_NAME_THREAD_LOC = new ThreadLocal<LocalGridName>() {
+        @Override protected LocalGridName initialValue() {
+            return new LocalGridNameImpl();
+        }
+    };
 
     /** */
     private static ThreadLocal<Boolean> daemon = new ThreadLocal<Boolean>() {
@@ -1289,12 +1293,10 @@ public class IgnitionEx {
      * @throws IllegalArgumentException Thrown to indicate, that current thread is not an {@link IgniteThread}.
      */
     public static IgniteKernal localIgnite() throws IllegalArgumentException {
-        final String gridName = GRID_NAME_THREAD_LOC.get();
+        final LocalGridName gridName = GRID_NAME_THREAD_LOC.get();
 
-        // TODO support null!!
-
-        if (gridName != null)
-            return gridx(gridName);
+        if (gridName.isSet())
+            return gridx(gridName.getGridName());
         else if (Thread.currentThread() instanceof IgniteThread)
             return gridx(((IgniteThread)Thread.currentThread()).getGridName());
         else
@@ -1365,20 +1367,11 @@ public class IgnitionEx {
     }
 
     /**
-     * Set ignite config to thread local.
-     *
-     * @param name Grid name.
-     */
-    public static void setGridNameThreadLocal(final String name) {
-        GRID_NAME_THREAD_LOC.set(name);
-    }
-
-    /**
      * Get ignite config from thread local.
      *
-     * @return Grid name.
+     * @return Local grid name.
      */
-    public static String getGridNameThreadLocal() {
+    public static LocalGridName gridNameThreadLocal() {
         return GRID_NAME_THREAD_LOC.get();
     }
 
@@ -2547,6 +2540,33 @@ public class IgnitionEx {
             public void setCounter(int cnt) {
                 this.cnt = cnt;
             }
+        }
+    }
+
+    /**
+     *
+     */
+    private static class LocalGridNameImpl implements LocalGridName {
+        /** Indicates whether value is initial or not. */
+        private boolean valSet;
+
+        /** Grid name. */
+        private String gridName;
+
+        /** {@inheritDoc} */
+        @Override public boolean isSet() {
+            return valSet;
+        }
+
+        /** {@inheritDoc} */
+        @Override public String getGridName() {
+            return gridName;
+        }
+
+        /** {@inheritDoc} */
+        @Override public void setGridName(final boolean set, final String gridName) {
+            this.valSet = set;
+            this.gridName = gridName;
         }
     }
 }

@@ -18,11 +18,9 @@
 package org.apache.ignite.marshaller;
 
 import org.apache.ignite.IgniteCheckedException;
-import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.internal.GridKernalContext;
+import org.apache.ignite.internal.LocalGridName;
 import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.client.marshaller.GridClientMarshaller;
-import org.apache.ignite.internal.util.typedef.F;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -51,12 +49,17 @@ public final class MarshallerUtils {
      */
     public static void marshal(final Marshaller marshaller, final @Nullable Object obj,
         final OutputStream out, final String gridName) throws IgniteCheckedException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             marshaller.marshal(obj, out);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -70,12 +73,17 @@ public final class MarshallerUtils {
      */
     public static byte[] marshal(final Marshaller marshaller, @Nullable Object obj,
         final String gridName) throws IgniteCheckedException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return marshaller.marshal(obj);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -91,12 +99,17 @@ public final class MarshallerUtils {
      */
     public static <T> T unmarshal(final Marshaller marshaller, InputStream in, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return marshaller.unmarshal(in, clsLdr);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -112,12 +125,17 @@ public final class MarshallerUtils {
      */
     public static <T> T unmarshal(final Marshaller marshaller, byte[] arr, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return marshaller.unmarshal(arr, clsLdr);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -133,12 +151,17 @@ public final class MarshallerUtils {
      */
     public static <T> T clone(final Marshaller marshaller, T obj, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return marshaller.unmarshal(marshaller.marshal(obj), clsLdr);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -153,12 +176,17 @@ public final class MarshallerUtils {
      */
     public static ByteBuffer marshal(GridClientMarshaller gridMarshaller, Object obj, int off,
         String gridName) throws IOException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return gridMarshaller.marshal(obj, off);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
@@ -173,32 +201,24 @@ public final class MarshallerUtils {
      */
     public static <T> T unmarshal(GridClientMarshaller gridMarshaller, byte[] bytes,
         String gridName) throws IOException {
-        final String name = setGridName(gridName);
+        final LocalGridName gridNameTl = gridName();
+
+        final String gridNameStr = gridNameTl.getGridName();
+        final boolean init = gridNameTl.isSet();
 
         try {
+            gridNameTl.setGridName(true, gridName);
+
             return gridMarshaller.unmarshal(bytes);
         } finally {
-            restoreGridName(name);
+            gridNameTl.setGridName(init, gridNameStr);
         }
     }
 
     /**
-     * @param name Grid name.
-     * @return Old grid name.
+     * @return Grid name thread local.
      */
-    private static String setGridName(final String name) {
-        final String gridName = IgnitionEx.getGridNameThreadLocal();
-
-        if (!F.eq(name, gridName))
-            IgnitionEx.setGridNameThreadLocal(name);
-
-        return gridName;
-    }
-
-    /**
-     * @param name Grid name.
-     */
-    private static void restoreGridName(final String name) {
-        IgnitionEx.setGridNameThreadLocal(name);
+    private static LocalGridName gridName() {
+        return IgnitionEx.gridNameThreadLocal();
     }
 }

@@ -27,7 +27,7 @@ import org.apache.ignite.binary.Binarylizable;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.binary.BinaryMarshaller;
 import org.apache.ignite.internal.util.typedef.internal.U;
-import org.apache.ignite.testframework.junits.GridAbstractTest;
+import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 
 import java.io.Externalizable;
@@ -37,7 +37,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 /**
  *
@@ -45,24 +45,6 @@ import java.lang.reflect.Method;
 public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
     /** */
     private static final String CACHE_NAME = "cache_name";
-
-    /**
-     * Emulate user thread.
-     *
-     * @throws Throwable
-     */
-    @Override protected void runTest() throws Throwable {
-        Class<?> cls = getClass();
-
-        while (!cls.equals(GridAbstractTest.class))
-            cls = cls.getSuperclass();
-
-        final Method runTest = cls.getDeclaredMethod("runTestInternal");
-
-        runTest.setAccessible(true);
-
-        runTest.invoke(this);
-    }
 
     /** {@inheritDoc} */
     @Override protected IgniteConfiguration getConfiguration(final String gridName) throws Exception {
@@ -87,7 +69,7 @@ public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
     /**
      * @throws Exception If failed.
      */
-    public void testSerializable() throws Exception {
+    public void testPutGetSerializable() throws Exception {
         testPutGet(new SerializableTestObject("test"), null);
     }
 
@@ -109,21 +91,28 @@ public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
      * @throws Exception If failed.
      */
     private void testPutGet(final TestObject obj, final String gridName) throws Exception {
-        try (final Ignite ignite = startGrid(gridName)) {
-            final IgniteCache<Integer, TestObject> cache = ignite.getOrCreateCache(CACHE_NAME);
+        // Run async to emulate user thread.
+        GridTestUtils.runAsync(new Callable<Object>() {
+            @Override public Object call() throws Exception {
+                try (final Ignite ignite = startGrid(gridName)) {
+                    final IgniteCache<Integer, TestObject> cache = ignite.getOrCreateCache(CACHE_NAME);
 
-            assertNull(obj.ignite());
+                    assertNull(obj.ignite());
 
-            cache.put(1, obj);
+                    cache.put(1, obj);
 
-            assertNotNull(obj.ignite());
+                    assertNotNull(obj.ignite());
 
-            final TestObject loadedObj = cache.get(1);
+                    final TestObject loadedObj = cache.get(1);
 
-            assertNotNull(loadedObj.ignite());
+                    assertNotNull(loadedObj.ignite());
 
-            assertEquals(obj, loadedObj);
-        }
+                    assertEquals(obj, loadedObj);
+                }
+
+                return null;
+            }
+        }).get();
     }
 
     /**
@@ -206,19 +195,33 @@ public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
         /** */
         private transient Ignite ignite;
 
+        /**
+         *
+         */
         public SerializableTestObject() {
         }
 
+        /**
+         * @param val Value
+         */
         public SerializableTestObject(final String val) {
             this.val = val;
         }
 
+        /**
+         * @param out Object output.
+         * @throws IOException If fail.
+         */
         private void writeObject(ObjectOutputStream out) throws IOException {
             U.writeString(out, val);
 
             ignite = Ignition.localIgnite();
         }
 
+        /**
+         * @param in Object input.
+         * @throws IOException If fail.
+         */
         private void readObject(ObjectInputStream in) throws IOException {
             val = U.readString(in);
 

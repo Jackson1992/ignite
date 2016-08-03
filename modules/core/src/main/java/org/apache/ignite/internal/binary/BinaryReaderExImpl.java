@@ -33,6 +33,7 @@ import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.binary.BinaryObjectException;
 import org.apache.ignite.binary.BinaryRawReader;
 import org.apache.ignite.binary.BinaryReader;
+import org.apache.ignite.internal.LocalGridName;
 import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.binary.streams.BinaryInputStream;
 import org.apache.ignite.internal.util.typedef.internal.SB;
@@ -1421,15 +1422,18 @@ public class BinaryReaderExImpl implements BinaryReader, BinaryRawReaderEx, Bina
      * @throws BinaryObjectException If failed.
      */
     @Nullable Object deserialize() throws BinaryObjectException {
-        final String gridName = IgnitionEx.getGridNameThreadLocal();
+        final LocalGridName gridName = IgnitionEx.gridNameThreadLocal();
+
+        final String gridNameStr = gridName.getGridName();
+        final boolean init = gridName.isSet();
 
         try {
-            IgnitionEx.setGridNameThreadLocal(ctx.configuration().getGridName());
+            gridName.setGridName(true, ctx.configuration().getGridName());
 
             return deserialize0();
         }
         finally {
-            IgnitionEx.setGridNameThreadLocal(gridName);
+            gridName.setGridName(init, gridNameStr);
         }
     }
 

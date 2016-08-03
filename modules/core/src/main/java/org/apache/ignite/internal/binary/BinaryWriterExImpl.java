@@ -33,6 +33,7 @@ import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.binary.BinaryObjectException;
 import org.apache.ignite.binary.BinaryRawWriter;
 import org.apache.ignite.binary.BinaryWriter;
+import org.apache.ignite.internal.LocalGridName;
 import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.binary.streams.BinaryHeapOutputStream;
 import org.apache.ignite.internal.binary.streams.BinaryOutputStream;
@@ -140,15 +141,18 @@ public class BinaryWriterExImpl implements BinaryWriter, BinaryRawWriterEx, Obje
      * @throws org.apache.ignite.binary.BinaryObjectException In case of error.
      */
     void marshal(Object obj, boolean enableReplace) throws BinaryObjectException {
-        final String gridName = IgnitionEx.getGridNameThreadLocal();
+        final LocalGridName gridName = IgnitionEx.gridNameThreadLocal();
+
+        final String gridNameStr = gridName.getGridName();
+        final boolean init = gridName.isSet();
 
         try {
-            IgnitionEx.setGridNameThreadLocal(ctx.configuration().getGridName());
+            gridName.setGridName(true, ctx.configuration().getGridName());
 
             marshal0(obj, enableReplace);
         }
         finally {
-            IgnitionEx.setGridNameThreadLocal(gridName);
+            gridName.setGridName(init, gridNameStr);
         }
     }
 

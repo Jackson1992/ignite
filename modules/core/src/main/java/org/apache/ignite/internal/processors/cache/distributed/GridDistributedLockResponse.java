@@ -34,6 +34,7 @@ import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteUuid;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.plugin.extensions.communication.MessageCollectionItemType;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
 import org.apache.ignite.plugin.extensions.communication.MessageWriter;
@@ -202,7 +203,7 @@ public class GridDistributedLockResponse extends GridDistributedBaseMessage {
         prepareMarshalCacheObjects(vals, ctx.cacheContext(cacheId));
 
         if (err != null)
-            errBytes = ctx.marshaller().marshal(err);
+            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
     }
 
     /** {@inheritDoc} */
@@ -211,8 +212,10 @@ public class GridDistributedLockResponse extends GridDistributedBaseMessage {
 
         finishUnmarshalCacheObjects(vals, ctx.cacheContext(cacheId), ldr);
 
-        if (errBytes != null)
-            err = ctx.marshaller().unmarshal(errBytes, U.resolveClassLoader(ldr, ctx.gridConfig()));
+        if (errBytes != null) {
+            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+        }
     }
 
     /** {@inheritDoc} */

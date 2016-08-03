@@ -37,6 +37,7 @@ import org.apache.ignite.internal.util.tostring.GridToStringInclude;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteUuid;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.plugin.extensions.communication.MessageCollectionItemType;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
 import org.apache.ignite.plugin.extensions.communication.MessageWriter;
@@ -190,7 +191,7 @@ public class GridNearGetResponse extends GridCacheMessage implements GridCacheDe
         }
 
         if (err != null)
-            errBytes = ctx.marshaller().marshal(err);
+            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
     }
 
     /** {@inheritDoc} */
@@ -204,8 +205,10 @@ public class GridNearGetResponse extends GridCacheMessage implements GridCacheDe
                 info.unmarshal(cctx, ldr);
         }
 
-        if (errBytes != null)
-            err = ctx.marshaller().unmarshal(errBytes, U.resolveClassLoader(ldr, ctx.gridConfig()));
+        if (errBytes != null) {
+            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+        }
     }
 
     /** {@inheritDoc} */

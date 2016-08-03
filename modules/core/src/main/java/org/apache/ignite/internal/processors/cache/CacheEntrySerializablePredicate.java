@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.internal.GridDirectTransient;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
 import org.apache.ignite.plugin.extensions.communication.MessageWriter;
@@ -80,7 +81,8 @@ public class CacheEntrySerializablePredicate implements CacheEntryPredicate {
         assert p != null || bytes != null;
 
         if (p == null) {
-            p = ctx.marshaller().unmarshal(bytes, U.resolveClassLoader(ldr, ctx.gridConfig()));
+            p = MarshallerUtils.unmarshal(ctx.marshaller(), bytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
 
             p.finishUnmarshal(ctx, ldr);
         }
@@ -92,7 +94,7 @@ public class CacheEntrySerializablePredicate implements CacheEntryPredicate {
 
         p.prepareMarshal(ctx);
 
-        bytes = ctx.marshaller().marshal(p);
+        bytes = MarshallerUtils.marshal(ctx.marshaller(), p, ctx.gridName());
     }
 
     /** {@inheritDoc} */

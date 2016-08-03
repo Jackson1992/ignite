@@ -76,6 +76,7 @@ import org.apache.ignite.lang.IgniteBiTuple;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.lang.IgniteUuid;
 import org.apache.ignite.marshaller.Marshaller;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsr166.ConcurrentHashMap8;
@@ -403,7 +404,7 @@ public class GridJobProcessor extends GridProcessorAdapter {
         boolean loc = ctx.localNodeId().equals(taskNode.id()) && !ctx.config().isMarshalLocalJobs();
 
         GridTaskSessionRequest req = new GridTaskSessionRequest(ses.getId(), ses.getJobId(),
-            loc ? null : marsh.marshal(attrs), attrs);
+            loc ? null : MarshallerUtils.marshal(marsh, attrs, ctx.gridName()), attrs);
 
         Object topic = TOPIC_TASK.topic(ses.getJobId(), ctx.discovery().localNode().id());
 
@@ -454,7 +455,7 @@ public class GridJobProcessor extends GridProcessorAdapter {
 
                     if (res.jobSiblings() == null) {
                         try {
-                            res.unmarshalSiblings(marsh);
+                            res.unmarshalSiblings(marsh, ctx);
                         }
                         catch (IgniteCheckedException e) {
                             U.error(log, "Failed to unmarshal job siblings.", e);
@@ -516,7 +517,7 @@ public class GridJobProcessor extends GridProcessorAdapter {
             ctx.io().send(taskNode, TOPIC_JOB_SIBLINGS,
                 new GridJobSiblingsRequest(ses.getId(),
                     loc ? topic : null,
-                    loc ? null : marsh.marshal(topic)),
+                    loc ? null : MarshallerUtils.marshal(marsh, topic, ctx.gridName())),
                 SYSTEM_POOL);
 
             // 4. Listen to discovery events.
@@ -1018,7 +1019,8 @@ public class GridJobProcessor extends GridProcessorAdapter {
                             if (siblings0 == null) {
                                 assert req.getSiblingsBytes() != null;
 
-                                siblings0 = marsh.unmarshal(req.getSiblingsBytes(), U.resolveClassLoader(ctx.config()));
+                                siblings0 = MarshallerUtils.unmarshal(marsh, req.getSiblingsBytes(),
+                                    U.resolveClassLoader(ctx.config()), ctx.gridName());
                             }
 
                             siblings = new ArrayList<>(siblings0);
@@ -1029,9 +1031,10 @@ public class GridJobProcessor extends GridProcessorAdapter {
                         if (req.isSessionFullSupport()) {
                             sesAttrs = req.getSessionAttributes();
 
-                            if (sesAttrs == null)
-                                sesAttrs = marsh.unmarshal(req.getSessionAttributesBytes(),
-                                    U.resolveClassLoader(dep.classLoader(), ctx.config()));
+                            if (sesAttrs == null) {
+                                sesAttrs = MarshallerUtils.unmarshal(marsh, req.getSessionAttributesBytes(),
+                                    U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+                            }
                         }
 
                         // Note that we unmarshal session/job attributes here with proper class loader.
@@ -1056,9 +1059,10 @@ public class GridJobProcessor extends GridProcessorAdapter {
 
                         Map<? extends Serializable, ? extends Serializable> jobAttrs = req.getJobAttributes();
 
-                        if (jobAttrs == null)
-                            jobAttrs = marsh.unmarshal(req.getJobAttributesBytes(),
-                                U.resolveClassLoader(dep.classLoader(), ctx.config()));
+                        if (jobAttrs == null) {
+                            jobAttrs = MarshallerUtils.unmarshal(marsh, req.getJobAttributesBytes(),
+                                U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+                        }
 
                         jobCtx = new GridJobContextImpl(ctx, req.getJobId(), jobAttrs);
                     }
@@ -1330,11 +1334,11 @@ public class GridJobProcessor extends GridProcessorAdapter {
                 locNodeId,
                 req.getSessionId(),
                 req.getJobId(),
-                loc ? null : marsh.marshal(ex),
+                loc ? null : MarshallerUtils.marshal(marsh, ex, ctx.gridName()),
                 ex,
-                loc ? null : marsh.marshal(null),
+                loc ? null : MarshallerUtils.marshal(marsh, null, ctx.gridName()),
                 null,
-                loc ? null : marsh.marshal(null),
+                loc ? null : MarshallerUtils.marshal(marsh, null, ctx.gridName()),
                 null,
                 false);
 
@@ -1425,8 +1429,8 @@ public class GridJobProcessor extends GridProcessorAdapter {
             boolean loc = ctx.localNodeId().equals(nodeId) && !ctx.config().isMarshalLocalJobs();
 
             Map<?, ?> attrs = loc ? req.getAttributes() :
-                (Map<?, ?>)marsh.unmarshal(req.getAttributesBytes(),
-                    U.resolveClassLoader(ses.getClassLoader(), ctx.config()));
+                (Map<?, ?>)MarshallerUtils.unmarshal(marsh, req.getAttributesBytes(),
+                    U.resolveClassLoader(ses.getClassLoader(), ctx.config()), ctx.gridName());
 
             if (ctx.event().isRecordable(EVT_TASK_SESSION_ATTR_SET)) {
                 Event evt = new TaskEvent(

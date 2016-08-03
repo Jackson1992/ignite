@@ -3013,6 +3013,7 @@ public class TcpCommunicationSpi extends IgniteSpiAdapter
                     endpoint,
                     srvLsnr,
                     writerFactory,
+                    ignite.configuration(),
                     new GridNioCodecFilter(new GridDirectParser(msgFactory, readerFactory), log, true),
                     new GridConnectionBytesVerifyFilter(log)
                 );

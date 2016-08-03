@@ -20,6 +20,7 @@ package org.apache.ignite.internal.util.nio;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.ignite.IgniteCheckedException;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.jetbrains.annotations.Nullable;
@@ -69,22 +70,28 @@ public class GridNioSessionImpl implements GridNioSession {
     /** Accepted flag. */
     private final boolean accepted;
 
+    /** Ignite configuration. */
+    private IgniteConfiguration igniteCfg;
+
     /**
      * @param filterChain Chain.
      * @param locAddr Local address.
      * @param rmtAddr Remote address.
+     * @param igniteCfg Ignite config.
      * @param accepted {@code True} if this session was initiated from remote host.
      */
     public GridNioSessionImpl(
         GridNioFilterChain filterChain,
         @Nullable InetSocketAddress locAddr,
         @Nullable InetSocketAddress rmtAddr,
-        boolean accepted
+        boolean accepted,
+        IgniteConfiguration igniteCfg
     ) {
         this.filterChain = filterChain;
         this.locAddr = locAddr;
         this.rmtAddr = rmtAddr;
         this.accepted = accepted;
+        this.igniteCfg = igniteCfg;
 
         long now = U.currentTimeMillis();
 
@@ -308,5 +315,10 @@ public class GridNioSessionImpl implements GridNioSession {
     /** {@inheritDoc} */
     @Override public String toString() {
         return S.toString(GridNioSessionImpl.class, this);
+    }
+
+    /** {@inheritDoc} */
+    @Override public IgniteConfiguration igniteConfiguration() {
+        return igniteCfg;
     }
 }

@@ -64,6 +64,7 @@ import org.apache.ignite.lang.IgniteInClosure;
 import org.apache.ignite.lang.IgniteProductVersion;
 import org.apache.ignite.lang.IgniteUuid;
 import org.apache.ignite.marshaller.Marshaller;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.marshaller.jdk.JdkMarshaller;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.resources.LoggerResource;
@@ -1377,7 +1378,7 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
         IgniteCheckedException err = null;
 
         try {
-            marsh.marshal(msg, out);
+            MarshallerUtils.marshal(marsh, msg, out, ignite.configuration().getGridName());
         }
         catch (IgniteCheckedException e) {
             err = e;
@@ -1461,10 +1462,8 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
         try {
             sock.setSoTimeout((int)timeout);
 
-            T res = marsh.unmarshal(in == null ? sock.getInputStream() : in,
-                U.resolveClassLoader(ignite.configuration()));
-
-            return res;
+            return MarshallerUtils.unmarshal(marsh, in == null ? sock.getInputStream() : in,
+                U.resolveClassLoader(ignite.configuration()), ignite.configuration().getGridName());
         }
         catch (IOException | IgniteCheckedException e) {
             if (X.hasCause(e, SocketTimeoutException.class))
@@ -1679,7 +1678,7 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
 
         for (Map.Entry<Integer, Serializable> entry : data.entrySet()) {
             try {
-                byte[] bytes = marsh.marshal(entry.getValue());
+                byte[] bytes = MarshallerUtils.marshal(marsh, entry.getValue(), ignite.configuration());
 
                 data0.put(entry.getKey(), bytes);
             }
@@ -1709,7 +1708,8 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
 
         for (Map.Entry<Integer, byte[]> entry : data.entrySet()) {
             try {
-                Serializable compData = marsh.unmarshal(entry.getValue(), clsLdr);
+                Serializable compData = MarshallerUtils.unmarshal(marsh, entry.getValue(), clsLdr,
+                        ignite.configuration());
 
                 data0.put(entry.getKey(), compData);
             }

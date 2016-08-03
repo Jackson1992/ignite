@@ -21,8 +21,10 @@ import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.binary.BinaryObjectException;
 import org.apache.ignite.binary.BinaryType;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.GridDirectTransient;
 import org.apache.ignite.internal.IgniteCodeGeneratingFail;
+import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.binary.streams.BinaryHeapInputStream;
 import org.apache.ignite.internal.processors.cache.CacheObject;
 import org.apache.ignite.internal.processors.cache.CacheObjectContext;
@@ -538,8 +540,18 @@ public final class BinaryObjectImpl extends BinaryObjectExImpl implements Extern
      * @return Object.
      */
     private Object deserializeValue(@Nullable CacheObjectContext coCtx) {
-        BinaryReaderExImpl reader = reader(null,
-            coCtx != null ? coCtx.kernalContext().config().getClassLoader() : ctx.configuration().getClassLoader());
+        final String gridName = IgnitionEx.getGridNameThreadLocal();
+
+        final ClassLoader cl;
+
+        if (coCtx != null) {
+            IgnitionEx.setGridNameThreadLocal(coCtx.kernalContext().config().getGridName());
+
+            cl = coCtx.kernalContext().config().getClassLoader();
+        } else
+            cl = ctx.configuration().getClassLoader();
+
+        final BinaryReaderExImpl reader = reader(null, cl);
 
         Object obj0 = reader.deserialize();
 
@@ -549,6 +561,8 @@ public final class BinaryObjectImpl extends BinaryObjectExImpl implements Extern
 
         if (coCtx != null && coCtx.storeValue())
             obj = obj0;
+
+        IgnitionEx.setGridNameThreadLocal(gridName);
 
         return obj0;
     }

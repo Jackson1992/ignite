@@ -34,6 +34,7 @@ import org.apache.ignite.internal.processors.cache.KeyCacheObject;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
 import org.apache.ignite.internal.util.typedef.internal.S;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.plugin.extensions.communication.MessageCollectionItemType;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
@@ -167,7 +168,7 @@ public class GridDhtAtomicUpdateResponse extends GridCacheMessage implements Gri
 
         prepareMarshalCacheObjects(nearEvicted, cctx);
 
-        errBytes = ctx.marshaller().marshal(err);
+        errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
     }
 
     /** {@inheritDoc} */
@@ -180,7 +181,8 @@ public class GridDhtAtomicUpdateResponse extends GridCacheMessage implements Gri
 
         finishUnmarshalCacheObjects(nearEvicted, cctx, ldr);
 
-        err = ctx.marshaller().unmarshal(errBytes, U.resolveClassLoader(ldr, ctx.gridConfig()));
+        err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
+            U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
     }
 
     /** {@inheritDoc} */

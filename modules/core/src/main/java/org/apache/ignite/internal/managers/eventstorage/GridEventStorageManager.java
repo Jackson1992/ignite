@@ -58,6 +58,7 @@ import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.lang.IgniteUuid;
 import org.apache.ignite.marshaller.Marshaller;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.plugin.security.SecurityPermission;
 import org.apache.ignite.spi.IgniteSpiException;
 import org.apache.ignite.spi.eventstorage.EventStorageSpi;
@@ -891,12 +892,12 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
 
                 try {
                     if (res.eventsBytes() != null)
-                        res.events(marsh.<Collection<Event>>unmarshal(res.eventsBytes(),
-                            U.resolveClassLoader(ctx.config())));
+                        res.events(MarshallerUtils.<Collection<Event>>unmarshal(marsh, res.eventsBytes(),
+                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
 
                     if (res.exceptionBytes() != null)
-                        res.exception(marsh.<Throwable>unmarshal(res.exceptionBytes(),
-                            U.resolveClassLoader(ctx.config())));
+                        res.exception(MarshallerUtils.<Throwable>unmarshal(marsh, res.exceptionBytes(),
+                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
                 }
                 catch (IgniteCheckedException e) {
                     U.error(log, "Failed to unmarshal events query response: " + msg, e);
@@ -932,7 +933,7 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
 
             ioMgr.addMessageListener(resTopic, resLsnr);
 
-            byte[] serFilter = marsh.marshal(p);
+            byte[] serFilter = MarshallerUtils.marshal(marsh, p, ctx.gridName());
 
             GridDeployment dep = ctx.deploy().deploy(p.getClass(), U.detectClassLoader(p.getClass()));
 
@@ -1023,7 +1024,7 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
             ctx.io().send(locNode, topic, msg, plc);
 
         if (!rmtNodes.isEmpty()) {
-            msg.responseTopicBytes(marsh.marshal(msg.responseTopic()));
+            msg.responseTopicBytes(MarshallerUtils.marshal(marsh, msg.responseTopic(), ctx.gridName()));
 
             ctx.io().send(rmtNodes, topic, msg, plc);
         }
@@ -1088,8 +1089,10 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
                 Collection<Event> evts;
 
                 try {
-                    if (req.responseTopicBytes() != null)
-                        req.responseTopic(marsh.unmarshal(req.responseTopicBytes(), U.resolveClassLoader(ctx.config())));
+                    if (req.responseTopicBytes() != null) {
+                        req.responseTopic(MarshallerUtils.unmarshal(marsh, req.responseTopicBytes(),
+                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                    }
 
                     GridDeployment dep = ctx.deploy().getGlobalDeployment(
                         req.deploymentMode(),
@@ -1105,7 +1108,8 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
                         throw new IgniteDeploymentCheckedException("Failed to obtain deployment for event filter " +
                             "(is peer class loading turned on?): " + req);
 
-                    filter = marsh.unmarshal(req.filter(), U.resolveClassLoader(dep.classLoader(), ctx.config()));
+                    filter = MarshallerUtils.unmarshal(marsh, req.filter(),
+                        U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
 
                     // Resource injection.
                     ctx.resource().inject(dep, dep.deployedClass(req.filterClassName()), filter);
@@ -1140,8 +1144,8 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
                         log.debug("Sending event query response to node [nodeId=" + nodeId + "res=" + res + ']');
 
                     if (!ctx.localNodeId().equals(nodeId)) {
-                        res.eventsBytes(marsh.marshal(res.events()));
-                        res.exceptionBytes(marsh.marshal(res.exception()));
+                        res.eventsBytes(MarshallerUtils.marshal(marsh, res.events(), ctx.gridName()));
+                        res.exceptionBytes(MarshallerUtils.marshal(marsh, res.exception(), ctx.gridName()));
                     }
 
                     ctx.io().send(node, req.responseTopic(), res, PUBLIC_POOL);

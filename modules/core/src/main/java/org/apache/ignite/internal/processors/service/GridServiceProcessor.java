@@ -83,6 +83,7 @@ import org.apache.ignite.lang.IgniteProductVersion;
 import org.apache.ignite.lang.IgniteUuid;
 import org.apache.ignite.marshaller.Marshaller;
 import org.apache.ignite.resources.IgniteInstanceResource;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.resources.JobContextResource;
 import org.apache.ignite.resources.LoggerResource;
 import org.apache.ignite.services.Service;
@@ -452,7 +453,7 @@ public class GridServiceProcessor extends GridProcessorAdapter {
             LazyServiceConfiguration cfg0;
 
             try {
-                byte[] srvcBytes = marsh.marshal(cfg.getService());
+                byte[] srvcBytes = MarshallerUtils.marshal(marsh, cfg.getService(), ctx.gridName());
 
                 cfg0 = new LazyServiceConfiguration(cfg, srvcBytes);
             }
@@ -1123,7 +1124,7 @@ public class GridServiceProcessor extends GridProcessorAdapter {
         if (cfg instanceof LazyServiceConfiguration) {
             byte[] bytes = ((LazyServiceConfiguration)cfg).serviceBytes();
 
-            Service srvc = m.unmarshal(bytes, U.resolveClassLoader(null, ctx.config()));
+            Service srvc = MarshallerUtils.unmarshal(m, bytes, U.resolveClassLoader(null, ctx.config()), ctx.gridName());
 
             ctx.resource().inject(srvc);
 
@@ -1133,10 +1134,10 @@ public class GridServiceProcessor extends GridProcessorAdapter {
             Service svc = cfg.getService();
 
             try {
-                byte[] bytes = m.marshal(svc);
+                byte[] bytes = MarshallerUtils.marshal(m, svc, ctx.gridName());
 
-                Service cp = m.unmarshal(bytes,
-                    U.resolveClassLoader(svc.getClass().getClassLoader(), ctx.config()));
+                Service cp = MarshallerUtils.unmarshal(m, bytes, U.resolveClassLoader(svc.getClass().getClassLoader(),
+                    ctx.config()), ctx.gridName());
 
                 ctx.resource().inject(cp);
 

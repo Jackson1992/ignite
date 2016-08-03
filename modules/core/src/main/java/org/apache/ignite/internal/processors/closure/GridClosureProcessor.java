@@ -70,6 +70,7 @@ import org.apache.ignite.lang.IgniteClosure;
 import org.apache.ignite.lang.IgniteProductVersion;
 import org.apache.ignite.lang.IgniteReducer;
 import org.apache.ignite.marshaller.Marshaller;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.resources.LoadBalancerResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1144,16 +1145,16 @@ public class GridClosureProcessor extends GridProcessorAdapter {
                         if (closureBytes == null) {
                             closure = c.job;
 
-                            closureBytes = marsh.marshal(c.job);
+                            closureBytes = MarshallerUtils.marshal(marsh, c.job, ctx.gridName());
                         }
 
                         if (c.job == closure)
-                            c.job = marsh.unmarshal(closureBytes, U.resolveClassLoader(ctx.config()));
+                            c.job = MarshallerUtils.unmarshal(marsh, closureBytes, U.resolveClassLoader(ctx.config()), ctx.gridName());
                         else
-                            c.job = marsh.unmarshal(marsh.marshal(c.job), U.resolveClassLoader(ctx.config()));
+                            c.job = MarshallerUtils.clone(marsh, c.job, U.resolveClassLoader(ctx.config()), ctx.gridName());
                     }
                     else
-                        job = marsh.unmarshal(marsh.marshal(job), U.resolveClassLoader(ctx.config()));
+                        job = MarshallerUtils.clone(marsh, job, U.resolveClassLoader(ctx.config()), ctx.gridName());
                 }
                 else
                     hadLocNode = true;

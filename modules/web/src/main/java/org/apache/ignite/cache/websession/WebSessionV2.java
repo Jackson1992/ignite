@@ -19,10 +19,12 @@ package org.apache.ignite.cache.websession;
 
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteException;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.util.tostring.GridToStringExclude;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.websession.WebSessionEntity;
 import org.apache.ignite.marshaller.Marshaller;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.ServletContext;
@@ -87,22 +89,27 @@ class WebSessionV2 implements HttpSession {
     /** Original session to delegate invalidation. */
     private final HttpSession genuineSes;
 
+    /** Ignite config. */
+    private final IgniteConfiguration cfg;
+
     /**
      * @param id Session ID.
      * @param ses Session.
      * @param isNew Is new flag.
      */
     WebSessionV2(final String id, final @Nullable HttpSession ses, final boolean isNew, final ServletContext ctx,
-        @Nullable WebSessionEntity entity, final Marshaller marshaller) {
+        @Nullable WebSessionEntity entity, final Marshaller marshaller, final IgniteConfiguration cfg) {
         assert id != null;
         assert marshaller != null;
         assert ctx != null;
         assert ses != null || entity != null;
+        assert cfg != null;
 
         this.marshaller = marshaller;
         this.ctx = ctx;
         this.isNew = isNew;
         this.genuineSes = ses;
+        this.cfg = cfg;
 
         accessTime = System.currentTimeMillis();
 
@@ -333,7 +340,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private <T> T unmarshal(final byte[] bytes) throws IOException {
         if (marshaller != null) {
             try {
-                return marshaller.unmarshal(bytes, getClass().getClassLoader());
+                return MarshallerUtils.unmarshal(marshaller, bytes, getClass().getClassLoader(), cfg);
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);
@@ -353,7 +360,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private byte[] marshal(final Object obj) throws IOException {
         if (marshaller != null) {
             try {
-                return marshaller.marshal(obj);
+                return MarshallerUtils.marshal(marshaller, obj, cfg);
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);

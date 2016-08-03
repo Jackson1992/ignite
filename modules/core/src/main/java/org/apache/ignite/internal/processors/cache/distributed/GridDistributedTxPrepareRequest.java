@@ -43,6 +43,7 @@ import org.apache.ignite.internal.util.typedef.C1;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteProductVersion;
+import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.plugin.extensions.communication.MessageCollectionItemType;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
 import org.apache.ignite.plugin.extensions.communication.MessageWriter;
@@ -332,7 +333,7 @@ public class GridDistributedTxPrepareRequest extends GridDistributedBaseMessage 
         // Marshal txNodes only if there is a node in topology with an older version.
         if (ctx.exchange().minimumNodeVersion(topologyVersion()).compareTo(TX_NODES_DIRECT_MARSHALLABLE_SINCE) < 0) {
             if (txNodes != null && txNodesBytes == null)
-                txNodesBytes = ctx.marshaller().marshal(txNodes);
+                txNodesBytes = MarshallerUtils.marshal(ctx.marshaller(), txNodes, ctx.gridName());
         }
         else {
             if (txNodesMsg == null)
@@ -372,7 +373,8 @@ public class GridDistributedTxPrepareRequest extends GridDistributedBaseMessage 
             txNodes = F.viewReadOnly(txNodesMsg, MSG_TO_COL);
 
         if (txNodesBytes != null && txNodes == null)
-            txNodes = ctx.marshaller().unmarshal(txNodesBytes, U.resolveClassLoader(ldr, ctx.gridConfig()));
+            txNodes = MarshallerUtils.unmarshal(ctx.marshaller(), txNodesBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
     }
 
     /** {@inheritDoc} */

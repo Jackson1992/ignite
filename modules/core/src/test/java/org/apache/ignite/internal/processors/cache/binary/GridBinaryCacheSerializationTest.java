@@ -17,11 +17,26 @@
 
 package org.apache.ignite.internal.processors.cache.binary;
 
+import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.binary.BinaryObjectException;
+import org.apache.ignite.binary.BinaryReader;
+import org.apache.ignite.binary.BinaryWriter;
+import org.apache.ignite.binary.Binarylizable;
+import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.internal.binary.BinaryMarshaller;
+import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.testframework.junits.GridAbstractTest;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
@@ -49,48 +64,110 @@ public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
         runTest.invoke(this);
     }
 
+    /** {@inheritDoc} */
+    @Override protected IgniteConfiguration getConfiguration(final String gridName) throws Exception {
+        final IgniteConfiguration cfg = super.getConfiguration(gridName);
+
+        if (gridName != null && gridName.startsWith("binary"))
+            cfg.setMarshaller(new BinaryMarshaller());
+
+        return cfg;
+    }
+
     /**
      * Test that calling {@link Ignition#localIgnite()}
      * is safe for binary marshaller.
      *
      * @throws Exception
      */
-    public void testPutGet() throws Exception {
-        final IgniteCache<Integer, MyObj> cache = startGrid().getOrCreateCache(CACHE_NAME);
-
-        final MyObj one = new MyObj("one");
-        final MyObj two = new MyObj("two");
-        final MyObj three = new MyObj("three");
-
-        cache.put(1, one);
-        cache.put(2, two);
-        cache.put(3, three);
-
-        final MyObj loadedOne = cache.get(1);
-        final MyObj loadedTwo = cache.get(2);
-        final MyObj loadedThree = cache.get(3);
-
-        assert one.equals(loadedOne);
-        assert two.equals(loadedTwo);
-        assert three.equals(loadedThree);
-
+    public void testPutGetSimple() throws Exception {
+        testPutGet(new SimpleTestObject("one"), null);
     }
 
     /**
-     * Test obj.
+     * @throws Exception If failed.
      */
-    private static class MyObj {
+    public void testSerializable() throws Exception {
+        testPutGet(new SerializableTestObject("test"), null);
+    }
+
+    /**
+     * @throws Exception If failed.
+     */
+    public void testPutGetExternalizable() throws Exception {
+        testPutGet(new ExternalizableTestObject("test"), null);
+    }
+
+    /**
+     * @throws Exception If failed.
+     */
+    public void testPutGetBinarylizable() throws Exception {
+        testPutGet(new BinarylizableTestObject("test"), "binaryIgnite");
+    }
+
+    /**
+     * @throws Exception If failed.
+     */
+    private void testPutGet(final TestObject obj, final String gridName) throws Exception {
+        try (final Ignite ignite = startGrid(gridName)) {
+            final IgniteCache<Integer, TestObject> cache = ignite.getOrCreateCache(CACHE_NAME);
+
+            assertNull(obj.ignite());
+
+            cache.put(1, obj);
+
+            assertNotNull(obj.ignite());
+
+            final TestObject loadedObj = cache.get(1);
+
+            assertNotNull(loadedObj.ignite());
+
+            assertEquals(obj, loadedObj);
+        }
+    }
+
+    /**
+     *
+     */
+    private interface TestObject {
+        /**
+         * @return Ignite instance.
+         */
+        Ignite ignite();
+    }
+
+    /**
+     * Test object.
+     */
+    private static class SimpleTestObject implements TestObject {
+        /** */
+        private final String val;
 
         /** */
-        final String val;
+        private transient Ignite ignite;
 
         /** */
-        private MyObj(final String val) {
+        private SimpleTestObject(final String val) {
             this.val = val;
         }
 
+        /**
+         * @return Object.
+         */
+        @SuppressWarnings("unused")
         private Object readResolve() {
-            Ignition.localIgnite();
+            ignite = Ignition.localIgnite();
+
+            return this;
+        }
+
+        /**
+         * @return Object.
+         */
+        @SuppressWarnings("unused")
+        private Object writeReplace() {
+            ignite = Ignition.localIgnite();
+
             return this;
         }
 
@@ -99,15 +176,195 @@ public class GridBinaryCacheSerializationTest extends GridCommonAbstractTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            final MyObj myObj = (MyObj) o;
+            final SimpleTestObject simpleTestObj = (SimpleTestObject) o;
 
-            return val != null ? val.equals(myObj.val) : myObj.val == null;
+            return val != null ? val.equals(simpleTestObj.val) : simpleTestObj.val == null;
 
         }
 
         /** */
         @Override public int hashCode() {
             return val != null ? val.hashCode() : 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override public Ignite ignite() {
+            return ignite;
+        }
+    }
+
+    /**
+     *
+     */
+    private static class SerializableTestObject implements Serializable, TestObject {
+        /** */
+        private static final long serialVersionUID = 0L;
+
+        /** */
+        private String val;
+
+        /** */
+        private transient Ignite ignite;
+
+        public SerializableTestObject() {
+        }
+
+        public SerializableTestObject(final String val) {
+            this.val = val;
+        }
+
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            U.writeString(out, val);
+
+            ignite = Ignition.localIgnite();
+        }
+
+        private void readObject(ObjectInputStream in) throws IOException {
+            val = U.readString(in);
+
+            ignite = Ignition.localIgnite();
+        }
+
+        /** {@inheritDoc} */
+        @Override public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final SerializableTestObject that = (SerializableTestObject) o;
+
+            return val != null ? val.equals(that.val) : that.val == null;
+
+        }
+
+        /** {@inheritDoc} */
+        @Override public int hashCode() {
+            return val != null ? val.hashCode() : 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override public Ignite ignite() {
+            return ignite;
+        }
+    }
+
+    /**
+     *
+     */
+    private static class ExternalizableTestObject implements Externalizable, TestObject {
+        /** */
+        private static final long serialVersionUID = 0L;
+
+        /** */
+        private String val;
+
+        /** */
+        private transient Ignite ignite;
+
+        /**
+         *
+         */
+        public ExternalizableTestObject() {
+        }
+
+        /**
+         * @param val Value.
+         */
+        public ExternalizableTestObject(final String val) {
+            this.val = val;
+        }
+
+        /** {@inheritDoc} */
+        @Override public void writeExternal(final ObjectOutput out) throws IOException {
+            U.writeString(out, val);
+
+            ignite = Ignition.localIgnite();
+        }
+
+        /** {@inheritDoc} */
+        @Override public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException {
+            val = U.readString(in);
+
+            ignite = Ignition.localIgnite();
+        }
+
+        /** {@inheritDoc} */
+        @Override public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final ExternalizableTestObject that = (ExternalizableTestObject) o;
+
+            return val != null ? val.equals(that.val) : that.val == null;
+
+        }
+
+        /** {@inheritDoc} */
+        @Override public int hashCode() {
+            return val != null ? val.hashCode() : 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override public Ignite ignite() {
+            return ignite;
+        }
+    }
+
+    /**
+     *
+     */
+    private static class BinarylizableTestObject implements Binarylizable, TestObject {
+        /** */
+        private String val;
+
+        /** */
+        private transient Ignite ignite;
+
+        /**
+         *
+         */
+        public BinarylizableTestObject() {
+        }
+
+        /**
+         * @param val Value.
+         */
+        public BinarylizableTestObject(final String val) {
+            this.val = val;
+        }
+
+        /** {@inheritDoc} */
+        @Override public void writeBinary(final BinaryWriter writer) throws BinaryObjectException {
+            writer.rawWriter().writeString(val);
+
+            ignite = Ignition.localIgnite();
+        }
+
+        /** {@inheritDoc} */
+        @Override public void readBinary(final BinaryReader reader) throws BinaryObjectException {
+            val = reader.rawReader().readString();
+
+            ignite = Ignition.localIgnite();
+        }
+
+        /** {@inheritDoc} */
+        @Override public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final BinarylizableTestObject that = (BinarylizableTestObject) o;
+
+            return val != null ? val.equals(that.val) : that.val == null;
+
+        }
+
+        /** {@inheritDoc} */
+        @Override public int hashCode() {
+            return val != null ? val.hashCode() : 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override public Ignite ignite() {
+            return ignite;
         }
     }
 }

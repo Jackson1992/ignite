@@ -743,7 +743,7 @@ class ServerImpl extends TcpDiscoveryImpl {
     @Override public void sendCustomEvent(DiscoverySpiCustomMessage evt) {
         try {
             msgWorker.addMessage(new TcpDiscoveryCustomEventMessage(getLocalNodeId(), evt,
-                    MarshallerUtils.marshal(spi.marsh, evt, spi.ignite().configuration())));
+                    MarshallerUtils.marshal(spi.marsh, evt, spi.ignite().name())));
         }
         catch (IgniteCheckedException e) {
             throw new IgniteSpiException("Failed to marshal custom event: " + evt, e);
@@ -827,7 +827,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                         Map<String, Object> attrs = new HashMap<>(locNode.attributes());
 
                         attrs.put(IgniteNodeAttributes.ATTR_SECURITY_SUBJECT,
-                            MarshallerUtils.marshal(spi.marsh, subj, spi.ignite().configuration()));
+                            MarshallerUtils.marshal(spi.marsh, subj, spi.ignite().name()));
                         attrs.remove(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS);
 
                         locNode.setAttributes(attrs);
@@ -1244,7 +1244,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
             attrs.put(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS,
                 MarshallerUtils.marshal(spi.marsh,
-                        attrs.get(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS), spi.ignite().configuration()));
+                        attrs.get(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS), spi.ignite().name()));
 
             node.setAttributes(attrs);
         }
@@ -1267,7 +1267,7 @@ class ServerImpl extends TcpDiscoveryImpl {
             if (credBytes == null)
                 return null;
 
-            return MarshallerUtils.unmarshal(spi.marsh, credBytes, null, spi.ignite().configuration());
+            return MarshallerUtils.unmarshal(spi.marsh, credBytes, null, spi.ignite().name());
         }
         catch (IgniteCheckedException e) {
             throw new IgniteSpiException("Failed to unmarshal node security credentials: " + node.id(), e);
@@ -2361,7 +2361,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                 for (ClientMessageWorker clientMsgWorker : clientMsgWorkers.values()) {
                     if (msgBytes == null) {
                         try {
-                            msgBytes = MarshallerUtils.marshal(spi.marsh, msg, spi.ignite().configuration());
+                            msgBytes = MarshallerUtils.marshal(spi.marsh, msg, spi.ignite().name());
                         }
                         catch (IgniteCheckedException e) {
                             U.error(log, "Failed to marshal message: " + msg, e);
@@ -2381,7 +2381,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                         if (clientMsgWorker.clientNodeId.equals(node.id())) {
                             try {
                                 msg0 = MarshallerUtils.unmarshal(spi.marsh, msgBytes,
-                                    U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().configuration());
+                                    U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().name());
 
                                 prepareNodeAddedMessage(msg0, clientMsgWorker.clientNodeId, null, null, null);
 
@@ -3140,7 +3140,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                             Map<String, Object> attrs = new HashMap<>(node.getAttributes());
 
                             attrs.put(IgniteNodeAttributes.ATTR_SECURITY_SUBJECT,
-                                    MarshallerUtils.marshal(spi.marsh, subj, spi.ignite().configuration()));
+                                    MarshallerUtils.marshal(spi.marsh, subj, spi.ignite().name()));
 
                             node.setAttributes(attrs);
                         }
@@ -3795,7 +3795,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                             SecurityContext coordSubj = MarshallerUtils.unmarshal(spi.marsh,
                                 node.<byte[]>attribute(IgniteNodeAttributes.ATTR_SECURITY_SUBJECT),
-                                U.resolveClassLoader(cfg), cfg);
+                                U.resolveClassLoader(cfg), cfg.getGridName());
 
                             if (!permissionsEqual(coordSubj.subject().permissions(), subj.subject().permissions())) {
                                 // Node has not pass authentication.
@@ -4847,7 +4847,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                     try {
                         msgObj = msg.message(spi.marsh, U.resolveClassLoader(spi.ignite().configuration()),
-                                spi.ignite().configuration());
+                                spi.ignite().name());
                     }
                     catch (Throwable e) {
                         U.error(log, "Failed to unmarshal discovery custom message.", e);
@@ -4860,7 +4860,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                             try {
                                 TcpDiscoveryCustomEventMessage ackMsg = new TcpDiscoveryCustomEventMessage(
                                     getLocalNodeId(), nextMsg,
-                                        MarshallerUtils.marshal(spi.marsh, nextMsg, spi.ignite().configuration()));
+                                        MarshallerUtils.marshal(spi.marsh, nextMsg, spi.ignite().name()));
 
                                 ackMsg.topologyVersion(msg.topologyVersion());
 
@@ -4994,7 +4994,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                         final IgniteConfiguration cfg = spi.ignite().configuration();
 
                         DiscoverySpiCustomMessage msgObj = msg.message(spi.marsh,
-                            U.resolveClassLoader(cfg), cfg);
+                            U.resolveClassLoader(cfg), cfg.getGridName());
 
                         lsnr.onDiscovery(DiscoveryCustomEvent.EVT_DISCOVERY_CUSTOM_EVT,
                             msg.topologyVersion(),
@@ -5005,7 +5005,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                         if (msgObj.isMutable())
                             msg.message(msgObj,
-                                    MarshallerUtils.marshal(spi.marsh, msgObj, spi.ignite().configuration()));
+                                    MarshallerUtils.marshal(spi.marsh, msgObj, spi.ignite().name()));
                     }
                     catch (Throwable e) {
                         U.error(log, "Failed to unmarshal discovery custom message.", e);
@@ -5932,7 +5932,7 @@ class ServerImpl extends TcpDiscoveryImpl {
                 byte[] msgBytes = msgT.get2();
 
                 if (msgBytes == null)
-                    msgBytes = MarshallerUtils.marshal(spi.marsh, msg, spi.ignite().configuration());
+                    msgBytes = MarshallerUtils.marshal(spi.marsh, msg, spi.ignite().name());
 
                 if (msg instanceof TcpDiscoveryClientAckResponse) {
                     if (clientVer == null) {

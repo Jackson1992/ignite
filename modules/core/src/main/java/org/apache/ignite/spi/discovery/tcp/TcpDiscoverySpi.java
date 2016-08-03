@@ -1678,7 +1678,7 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
 
         for (Map.Entry<Integer, Serializable> entry : data.entrySet()) {
             try {
-                byte[] bytes = MarshallerUtils.marshal(marsh, entry.getValue(), ignite.configuration());
+                byte[] bytes = MarshallerUtils.marshal(marsh, entry.getValue(), ignite.name());
 
                 data0.put(entry.getKey(), bytes);
             }
@@ -1709,7 +1709,7 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
         for (Map.Entry<Integer, byte[]> entry : data.entrySet()) {
             try {
                 Serializable compData = MarshallerUtils.unmarshal(marsh, entry.getValue(), clsLdr,
-                        ignite.configuration());
+                        ignite.name());
 
                 data0.put(entry.getKey(), compData);
             }

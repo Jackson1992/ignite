@@ -165,7 +165,7 @@ public class SocketStreamer<T, K, V> extends StreamAdapter<T, K, V> {
             }
 
             @Override public void onMessage(GridNioSession ses, byte[] msg) {
-                addMessage(converter.convert(msg, ses.igniteConfiguration()));
+                addMessage(converter.convert(msg, ses.gridName()));
             }
         };
 
@@ -220,9 +220,9 @@ public class SocketStreamer<T, K, V> extends StreamAdapter<T, K, V> {
         private static final JdkMarshaller MARSH = new JdkMarshaller();
 
         /** {@inheritDoc} */
-        @Override public T convert(byte[] msg, final IgniteConfiguration igniteCfg) {
+        @Override public T convert(byte[] msg, final String gridName) {
             try {
-                return MarshallerUtils.unmarshal(MARSH, msg, null, igniteCfg);
+                return MarshallerUtils.unmarshal(MARSH, msg, null, gridName);
             }
             catch (IgniteCheckedException e) {
                 throw new IgniteException(e);

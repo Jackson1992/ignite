@@ -83,7 +83,7 @@ public class GridCacheQueryJdbcTask extends ComputeTaskAdapter<byte[], byte[]> {
         try {
             assert arg != null;
 
-            Map<String, Object> args = MarshallerUtils.unmarshal(MARSHALLER, arg, null, ignite.configuration());
+            Map<String, Object> args = MarshallerUtils.unmarshal(MARSHALLER, arg, null, ignite.name());
 
             boolean first = true;
 
@@ -131,13 +131,13 @@ public class GridCacheQueryJdbcTask extends ComputeTaskAdapter<byte[], byte[]> {
             if (res.getException() == null) {
                 status = 0;
 
-                bytes = MarshallerUtils.marshal(MARSHALLER, res.getData(), ignite.configuration());
+                bytes = MarshallerUtils.marshal(MARSHALLER, res.getData(), ignite.name());
             }
             else {
                 status = 1;
 
                 bytes = MarshallerUtils.marshal(MARSHALLER, new SQLException(res.getException().getMessage()),
-                        ignite.configuration());
+                        ignite.name());
             }
 
             byte[] packet = new byte[bytes.length + 1];

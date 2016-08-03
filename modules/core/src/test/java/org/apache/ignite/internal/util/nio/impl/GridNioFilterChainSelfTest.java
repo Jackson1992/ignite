@@ -380,7 +380,7 @@ public class GridNioFilterChainSelfTest extends GridCommonAbstractTest {
         }
 
         /** {@inheritDoc} */
-        @Override public IgniteConfiguration igniteConfiguration() {
+        @Override public String gridName() {
             return null;
         }
     }

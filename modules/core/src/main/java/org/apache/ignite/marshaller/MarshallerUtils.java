@@ -64,19 +64,6 @@ public final class MarshallerUtils {
      *
      * @param marshaller marshaller.
      * @param obj object.
-     * @param igniteCfg ignite config.
-     * @return serialized.
-     * @throws IgniteCheckedException
-     */
-    public static byte[] marshal(final Marshaller marshaller, @Nullable Object obj,
-        final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
-        return marshal(marshaller, obj, igniteCfg.getGridName());
-    }
-
-    /**
-     *
-     * @param marshaller marshaller.
-     * @param obj object.
      * @param gridName Grid name.
      * @return serialized.
      * @throws IgniteCheckedException
@@ -132,21 +119,6 @@ public final class MarshallerUtils {
         } finally {
             restoreGridName(name);
         }
-    }
-
-    /**
-     *
-     * @param marshaller marshaller.
-     * @param arr byte array.
-     * @param clsLdr class loader.
-     * @param igniteCfg ignite config.
-     * @param <T> target type
-     * @return deserialized object.
-     * @throws IgniteCheckedException
-     */
-    public static <T> T unmarshal(final Marshaller marshaller, byte[] arr, @Nullable ClassLoader clsLdr,
-        final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
-        return unmarshal(marshaller, arr, clsLdr, igniteCfg.getGridName());
     }
 
     /**
@@ -228,14 +200,5 @@ public final class MarshallerUtils {
      */
     private static void restoreGridName(final String name) {
         IgnitionEx.setGridNameThreadLocal(name);
-    }
-
-    /**
-     *
-     * @param kernalCtx kernal context.
-     * @return ignite config or null.
-     */
-    private static IgniteConfiguration getConfig(final @Nullable GridKernalContext kernalCtx) {
-        return kernalCtx == null ? null : kernalCtx.config();
     }
 }

@@ -1175,15 +1175,12 @@ public class HadoopExternalCommunication {
 
             this.endpoint = endpoint;
 
-            final IgniteConfiguration cfg = new IgniteConfiguration(); // TODO provide real config
-            cfg.setGridName(gridName);
-
             adapter = new HadoopIpcToNioAdapter<>(
                 HadoopExternalCommunication.this.log,
                 endpoint,
                 accepted,
                 srvLsnr,
-                cfg,
+                gridName,
                 filters());
         }
 

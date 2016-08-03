@@ -171,7 +171,7 @@ public class GridTcpRestParser implements GridNioParser {
         GridClientMessage msg = (GridClientMessage)msg0;
 
         if (msg instanceof GridMemcachedMessage)
-            return encodeMemcache((GridMemcachedMessage)msg, ses.igniteConfiguration());
+            return encodeMemcache((GridMemcachedMessage)msg, ses.gridName());
         else if (msg instanceof GridClientPingPacket)
             return ByteBuffer.wrap(GridClientPingPacket.PING_PACKET);
         else if (msg instanceof GridClientHandshakeRequest) {
@@ -210,7 +210,7 @@ public class GridTcpRestParser implements GridNioParser {
         else {
             GridClientMarshaller marsh = marshaller(ses);
 
-            ByteBuffer res = MarshallerUtils.marshal(marsh, msg, 45, ses.igniteConfiguration().getGridName());
+            ByteBuffer res = MarshallerUtils.marshal(marsh, msg, 45, ses.gridName());
 
             ByteBuffer slice = res.slice();
 
@@ -522,7 +522,7 @@ public class GridTcpRestParser implements GridNioParser {
             GridClientMarshaller marsh = marshaller(ses);
 
             msg = MarshallerUtils.unmarshal(marsh, state.buffer().toByteArray(),
-                ses.igniteConfiguration().getGridName());
+                ses.gridName());
 
             msg.requestId(state.header().reqId());
             msg.clientId(state.header().clientId());
@@ -536,12 +536,12 @@ public class GridTcpRestParser implements GridNioParser {
      * Encodes memcache message to a raw byte array.
      *
      * @param msg Message being serialized.
-     * @param igniteCfg Ignite config.
+     * @param gridName Grid name.
      * @return Serialized message.
      * @throws IgniteCheckedException If serialization failed.
      */
     private ByteBuffer encodeMemcache(GridMemcachedMessage msg,
-        final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
+        final String gridName) throws IgniteCheckedException {
         GridByteArrayList res = new GridByteArrayList(HDR_LEN);
 
         int keyLen = 0;
@@ -551,7 +551,7 @@ public class GridTcpRestParser implements GridNioParser {
         if (msg.key() != null) {
             ByteArrayOutputStream rawKey = new ByteArrayOutputStream();
 
-            keyFlags = encodeObj(msg.key(), rawKey, igniteCfg);
+            keyFlags = encodeObj(msg.key(), rawKey, gridName);
 
             msg.key(rawKey.toByteArray());
 
@@ -565,7 +565,7 @@ public class GridTcpRestParser implements GridNioParser {
         if (msg.value() != null) {
             ByteArrayOutputStream rawVal = new ByteArrayOutputStream();
 
-            valFlags = encodeObj(msg.value(), rawVal, igniteCfg);
+            valFlags = encodeObj(msg.value(), rawVal, gridName);
 
             msg.value(rawVal.toByteArray());
 
@@ -650,7 +650,7 @@ public class GridTcpRestParser implements GridNioParser {
                 byte[] rawKey = (byte[])req.key();
 
                 // Only values can be hessian-encoded.
-                req.key(decodeObj(keyFlags, rawKey, ses.igniteConfiguration()));
+                req.key(decodeObj(keyFlags, rawKey, ses.gridName()));
             }
 
             if (req.value() != null) {
@@ -658,7 +658,7 @@ public class GridTcpRestParser implements GridNioParser {
 
                 byte[] rawVal = (byte[])req.value();
 
-                req.value(decodeObj(valFlags, rawVal, ses.igniteConfiguration()));
+                req.value(decodeObj(valFlags, rawVal, ses.gridName()));
             }
         }
 
@@ -716,16 +716,16 @@ public class GridTcpRestParser implements GridNioParser {
      *
      * @param flags Flags.
      * @param bytes Byte array to decode.
-     * @param igniteCfg Ignite config.
+     * @param gridName Grid name.
      * @return Decoded value.
      * @throws IgniteCheckedException If deserialization failed.
      */
     private Object decodeObj(short flags, byte[] bytes,
-        final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
+        final String gridName) throws IgniteCheckedException {
         assert bytes != null;
 
         if ((flags & SERIALIZED_FLAG) != 0)
-            return MarshallerUtils.unmarshal(jdkMarshaller, bytes, null, igniteCfg);
+            return MarshallerUtils.unmarshal(jdkMarshaller, bytes, null, gridName);
 
         int masked = flags & 0xff00;
 
@@ -756,12 +756,12 @@ public class GridTcpRestParser implements GridNioParser {
      *
      * @param obj Object to serialize.
      * @param out Output stream to which object should be written.
-     * @param igniteCfg Ignite config.
+     * @param gridName Grid name.
      * @return Serialization flags.
      * @throws IgniteCheckedException If JDK serialization failed.
      */
     private int encodeObj(Object obj, ByteArrayOutputStream out,
-        final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
+        final String gridName) throws IgniteCheckedException {
         int flags = 0;
 
         byte[] data = null;
@@ -809,7 +809,7 @@ public class GridTcpRestParser implements GridNioParser {
             flags |= BYTE_ARR_FLAG;
         }
         else {
-            MarshallerUtils.marshal(jdkMarshaller, obj, out, igniteCfg.getGridName());
+            MarshallerUtils.marshal(jdkMarshaller, obj, out, gridName);
 
             flags |= SERIALIZED_FLAG;
         }

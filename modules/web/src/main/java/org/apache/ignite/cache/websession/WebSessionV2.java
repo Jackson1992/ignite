@@ -19,7 +19,6 @@ package org.apache.ignite.cache.websession;
 
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteException;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.util.tostring.GridToStringExclude;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.websession.WebSessionEntity;
@@ -90,7 +89,7 @@ class WebSessionV2 implements HttpSession {
     private final HttpSession genuineSes;
 
     /** Ignite config. */
-    private final IgniteConfiguration cfg;
+    private final String gridName;
 
     /**
      * @param id Session ID.
@@ -98,18 +97,18 @@ class WebSessionV2 implements HttpSession {
      * @param isNew Is new flag.
      */
     WebSessionV2(final String id, final @Nullable HttpSession ses, final boolean isNew, final ServletContext ctx,
-        @Nullable WebSessionEntity entity, final Marshaller marshaller, final IgniteConfiguration cfg) {
+        @Nullable WebSessionEntity entity, final Marshaller marshaller, final String gridName) {
         assert id != null;
         assert marshaller != null;
         assert ctx != null;
         assert ses != null || entity != null;
-        assert cfg != null;
+        assert gridName != null;
 
         this.marshaller = marshaller;
         this.ctx = ctx;
         this.isNew = isNew;
         this.genuineSes = ses;
-        this.cfg = cfg;
+        this.gridName = gridName;
 
         accessTime = System.currentTimeMillis();
 
@@ -340,7 +339,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private <T> T unmarshal(final byte[] bytes) throws IOException {
         if (marshaller != null) {
             try {
-                return MarshallerUtils.unmarshal(marshaller, bytes, getClass().getClassLoader(), cfg);
+                return MarshallerUtils.unmarshal(marshaller, bytes, getClass().getClassLoader(), gridName);
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);
@@ -360,7 +359,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private byte[] marshal(final Object obj) throws IOException {
         if (marshaller != null) {
             try {
-                return MarshallerUtils.marshal(marshaller, obj, cfg);
+                return MarshallerUtils.marshal(marshaller, obj, gridName);
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);

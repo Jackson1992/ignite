@@ -361,7 +361,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
             if (!addr.isLoopbackAddress()) {
                 try {
                     if (!clientMode)
-                        addrSnds.add(new AddressSender(mcastAddr, addr, addrs, getIgniteConfiguration()));
+                        addrSnds.add(new AddressSender(mcastAddr, addr, addrs));
 
                     reqItfs.add(addr);
                 }
@@ -381,7 +381,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
                 try {
                     // Create non-bound socket if local host is loopback or failed to create sockets explicitly
                     // bound to interfaces.
-                    addrSnds.add(new AddressSender(mcastAddr, null, addrs, getIgniteConfiguration()));
+                    addrSnds.add(new AddressSender(mcastAddr, null, addrs));
                 }
                 catch (IOException e) {
                     if (log.isDebugEnabled())
@@ -391,7 +391,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
 
                 if (addrSnds.isEmpty()) {
                     try {
-                        addrSnds.add(new AddressSender(mcastAddr, mcastAddr, addrs, getIgniteConfiguration()));
+                        addrSnds.add(new AddressSender(mcastAddr, mcastAddr, addrs));
 
                         reqItfs.add(mcastAddr);
                     }
@@ -595,7 +595,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
                             AddressResponse addrRes;
 
                             try {
-                                addrRes = new AddressResponse(data, getIgniteConfiguration());
+                                addrRes = new AddressResponse(data, getGridName());
                             }
                             catch (IgniteCheckedException e) {
                                 LT.warn(log, e, "Failed to deserialize multicast response.");
@@ -647,8 +647,8 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
      *
      * @return Ignite config or {@code null}.
      */
-    @Nullable private IgniteConfiguration getIgniteConfiguration() {
-        return ignite == null ? null : ignite.configuration();
+    @Nullable private String getGridName() {
+        return ignite == null ? null : ignite.name();
     }
 
     /** {@inheritDoc} */
@@ -699,10 +699,10 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
          * @param addrs Addresses discovery SPI binds to.
          * @throws IgniteCheckedException If marshalling failed.
          */
-        private AddressResponse(Collection<InetSocketAddress> addrs, final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
+        private AddressResponse(Collection<InetSocketAddress> addrs, final String gridName) throws IgniteCheckedException {
             this.addrs = addrs;
 
-            byte[] addrsData = MarshallerUtils.marshal(marsh, addrs, igniteCfg);
+            byte[] addrsData = MarshallerUtils.marshal(marsh, addrs, gridName);
             data = new byte[U.IGNITE_HEADER.length + addrsData.length];
 
             if (data.length > MAX_DATA_LENGTH)
@@ -714,15 +714,16 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
 
         /**
          * @param data Message data.
+         * @param gridName Grid name.
          * @throws IgniteCheckedException If unmarshalling failed.
          */
-        private AddressResponse(byte[] data, final IgniteConfiguration igniteCfg) throws IgniteCheckedException {
+        private AddressResponse(byte[] data, final String gridName) throws IgniteCheckedException {
             assert U.bytesEqual(U.IGNITE_HEADER, 0, data, 0, U.IGNITE_HEADER.length);
 
             this.data = data;
 
             addrs = MarshallerUtils.unmarshal(marsh,
-                    Arrays.copyOfRange(data, U.IGNITE_HEADER.length, data.length), null, igniteCfg);
+                    Arrays.copyOfRange(data, U.IGNITE_HEADER.length, data.length), null, gridName);
         }
 
         /**
@@ -794,24 +795,18 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
         /** */
         private final InetAddress sockItf;
 
-        /** */
-        private final IgniteConfiguration igniteCfg;
-
         /**
          * @param mcastGrp Multicast address.
          * @param sockItf Optional interface multicast socket should be bound to.
          * @param addrs Local node addresses.
-         * @param igniteCfg Ignite configuration.
          * @throws IOException If fails to create multicast socket.
          */
-        private AddressSender(InetAddress mcastGrp, @Nullable InetAddress sockItf, Collection<InetSocketAddress> addrs,
-            final IgniteConfiguration igniteCfg)
+        private AddressSender(InetAddress mcastGrp, @Nullable InetAddress sockItf, Collection<InetSocketAddress> addrs)
             throws IOException {
             super(ignite == null ? null : ignite.name(), "tcp-disco-multicast-addr-sender", log);
             this.mcastGrp = mcastGrp;
             this.addrs = addrs;
             this.sockItf = sockItf;
-            this.igniteCfg = igniteCfg;
 
             sock = createSocket();
         }
@@ -847,7 +842,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
             AddressResponse res;
 
             try {
-                res = new AddressResponse(addrs, igniteCfg);
+                res = new AddressResponse(addrs, gridName);
             }
             catch (IgniteCheckedException e) {
                 U.error(log, "Failed to prepare multicast message.", e);

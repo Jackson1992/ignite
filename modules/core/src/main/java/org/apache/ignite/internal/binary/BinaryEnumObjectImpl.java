@@ -244,7 +244,7 @@ public class BinaryEnumObjectImpl implements BinaryObjectEx, Externalizable, Cac
 
     /** {@inheritDoc} */
     @Override public byte[] valueBytes(CacheObjectContext cacheCtx) throws IgniteCheckedException {
-        return MarshallerUtils.marshal(ctx.marshaller(), this, ctx.configuration());
+        return MarshallerUtils.marshal(ctx.marshaller(), this, ctx.configuration().getGridName());
     }
 
     /** {@inheritDoc} */

@@ -1289,12 +1289,16 @@ public class IgnitionEx {
      * @throws IllegalArgumentException Thrown to indicate, that current thread is not an {@link IgniteThread}.
      */
     public static IgniteKernal localIgnite() throws IllegalArgumentException {
-        if (GRID_NAME_THREAD_LOC.get() != null)
-            return gridx(GRID_NAME_THREAD_LOC.get());
+        final String gridName = GRID_NAME_THREAD_LOC.get();
+
+        // TODO support null!!
+
+        if (gridName != null)
+            return gridx(gridName);
         else if (Thread.currentThread() instanceof IgniteThread)
             return gridx(((IgniteThread)Thread.currentThread()).getGridName());
         else
-            throw new IllegalArgumentException("Ignite conf thread local must be set or" +
+            throw new IllegalArgumentException("Ignite grid name thread local must be set or" +
                     " this method should be accessed under " + IgniteThread.class.getName());
     }
 

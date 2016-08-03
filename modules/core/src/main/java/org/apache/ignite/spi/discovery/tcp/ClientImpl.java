@@ -431,7 +431,7 @@ class ClientImpl extends TcpDiscoveryImpl {
 
         try {
             sockWriter.sendMessage(new TcpDiscoveryCustomEventMessage(getLocalNodeId(), evt,
-                MarshallerUtils.marshal(spi.marsh, evt, spi.ignite().configuration())));
+                MarshallerUtils.marshal(spi.marsh, evt, spi.ignite().name())));
         }
         catch (IgniteCheckedException e) {
             throw new IgniteSpiException("Failed to marshal custom event: " + evt, e);
@@ -686,7 +686,7 @@ class ClientImpl extends TcpDiscoveryImpl {
 
             attrs.put(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS,
                     MarshallerUtils.marshal(spi.marsh, attrs.get(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS),
-                        spi.ignite().configuration()));
+                        spi.ignite().name()));
 
             node.setAttributes(attrs);
         }
@@ -1968,7 +1968,7 @@ class ClientImpl extends TcpDiscoveryImpl {
                     if (node != null && node.visible()) {
                         try {
                             DiscoverySpiCustomMessage msgObj = msg.message(spi.marsh,
-                                U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().configuration());
+                                U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().name());
 
                             notifyDiscovery(EVT_DISCOVERY_CUSTOM_EVT, topVer, node, allVisibleNodes(), msgObj);
                         }

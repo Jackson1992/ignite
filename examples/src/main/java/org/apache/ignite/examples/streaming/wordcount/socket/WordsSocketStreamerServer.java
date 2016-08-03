@@ -100,7 +100,7 @@ public class WordsSocketStreamerServer {
 
         // Converter from zero-terminated string to Java strings.
         sockStmr.setConverter(new SocketMessageConverter<String>() {
-            @Override public String convert(byte[] msg, IgniteConfiguration cfg) {
+            @Override public String convert(byte[] msg, String gridName) {
                 try {
                     return new String(msg, "ASCII");
                 }

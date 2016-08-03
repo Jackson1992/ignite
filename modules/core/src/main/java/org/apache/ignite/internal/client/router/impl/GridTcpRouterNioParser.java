@@ -86,7 +86,7 @@ class GridTcpRouterNioParser extends GridTcpRestParser {
 
             GridClientMessage clientMsg = (GridClientMessage)msg;
 
-            ByteBuffer res = MarshallerUtils.marshal(marsh, msg, 45, ses.igniteConfiguration().getGridName());
+            ByteBuffer res = MarshallerUtils.marshal(marsh, msg, 45, ses.gridName());
 
             ByteBuffer slice = res.slice();
 

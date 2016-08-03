@@ -1635,10 +1635,6 @@ public class GridNioServer<T> {
                     readBuf.order(order);
                 }
 
-                final IgniteConfiguration cfg = new IgniteConfiguration(); // TODO provide real config
-
-                cfg.setGridName(gridName);
-
                 final GridSelectorNioSessionImpl ses = new GridSelectorNioSessionImpl(
                     log,
                     idx,
@@ -1649,7 +1645,7 @@ public class GridNioServer<T> {
                     sndQueueLimit,
                     writeBuf,
                     readBuf,
-                    cfg);
+                    gridName);
 
                 Map<Integer, ?> meta = req.meta();
 

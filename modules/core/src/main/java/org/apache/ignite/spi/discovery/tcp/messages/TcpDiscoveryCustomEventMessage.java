@@ -74,25 +74,25 @@ public class TcpDiscoveryCustomEventMessage extends TcpDiscoveryAbstractMessage 
 
     /**
      * @param marsh Marshaller.
-     * @param igniteCfg Ignite configuration.
+     * @param gridName Grid name.
      * @return Deserialized message.
      * @throws java.lang.Throwable if unmarshal failed.
      */
-    @Nullable public DiscoverySpiCustomMessage message(@NotNull Marshaller marsh, IgniteConfiguration igniteCfg) throws Throwable {
-        return message(marsh, null, igniteCfg);
+    @Nullable public DiscoverySpiCustomMessage message(@NotNull Marshaller marsh, String gridName) throws Throwable {
+        return message(marsh, null, gridName);
     }
 
     /**
      * @param marsh Marshaller.
      * @param ldr Class loader.
-     * @param igniteCfg Ignite configuration.
+     * @param gridName Grid name.
      * @return Deserialized message.
      * @throws java.lang.Throwable if unmarshal failed.
      */
     @Nullable public DiscoverySpiCustomMessage message(@NotNull Marshaller marsh, ClassLoader ldr,
-        final IgniteConfiguration igniteCfg) throws Throwable {
+        final String gridName) throws Throwable {
         if (msg == null) {
-            msg = MarshallerUtils.unmarshal(marsh, msgBytes, ldr, igniteCfg);
+            msg = MarshallerUtils.unmarshal(marsh, msgBytes, ldr, gridName);
 
             assert msg != null;
         }

@@ -70,14 +70,14 @@ public class GridNioSessionImpl implements GridNioSession {
     /** Accepted flag. */
     private final boolean accepted;
 
-    /** Ignite configuration. */
-    private IgniteConfiguration igniteCfg;
+    /** Grid name. */
+    private String gridName;
 
     /**
      * @param filterChain Chain.
      * @param locAddr Local address.
      * @param rmtAddr Remote address.
-     * @param igniteCfg Ignite config.
+     * @param gridName Grid name.
      * @param accepted {@code True} if this session was initiated from remote host.
      */
     public GridNioSessionImpl(
@@ -85,13 +85,13 @@ public class GridNioSessionImpl implements GridNioSession {
         @Nullable InetSocketAddress locAddr,
         @Nullable InetSocketAddress rmtAddr,
         boolean accepted,
-        IgniteConfiguration igniteCfg
+        String gridName
     ) {
         this.filterChain = filterChain;
         this.locAddr = locAddr;
         this.rmtAddr = rmtAddr;
         this.accepted = accepted;
-        this.igniteCfg = igniteCfg;
+        this.gridName = gridName;
 
         long now = U.currentTimeMillis();
 
@@ -318,7 +318,7 @@ public class GridNioSessionImpl implements GridNioSession {
     }
 
     /** {@inheritDoc} */
-    @Override public IgniteConfiguration igniteConfiguration() {
-        return igniteCfg;
+    @Override public String gridName() {
+        return gridName;
     }
 }

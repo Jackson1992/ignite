@@ -143,7 +143,7 @@ public class MockNioSession extends GridMetadataAwareAdapter implements GridNioS
     }
 
     /** {@inheritDoc} */
-    @Override public IgniteConfiguration igniteConfiguration() {
+    @Override public String gridName() {
         return null;
     }
 }

@@ -51,6 +51,7 @@ import org.apache.ignite.internal.processors.cache.GridCacheMultinodeUpdateSelfT
 import org.apache.ignite.internal.processors.cache.GridCacheStoreManagerDeserializationTest;
 import org.apache.ignite.internal.processors.cache.GridCacheVersionMultinodeTest;
 import org.apache.ignite.internal.processors.cache.GridLocalCacheStoreManagerDeserializationTest;
+import org.apache.ignite.internal.processors.cache.GridLocalIgniteSerializationTest;
 import org.apache.ignite.internal.processors.cache.IgniteCacheAtomicCopyOnReadDisabledTest;
 import org.apache.ignite.internal.processors.cache.IgniteCacheAtomicLocalPeekModesTest;
 import org.apache.ignite.internal.processors.cache.IgniteCacheAtomicLocalStoreValueTest;
@@ -318,6 +319,8 @@ public class IgniteCacheTestSuite4 extends TestSuite {
         suite.addTestSuite(IgniteCacheLoadRebalanceEvictionSelfTest.class);
 
         suite.addTestSuite(MarshallerCacheJobRunNodeRestartTest.class);
+
+        suite.addTestSuite(GridLocalIgniteSerializationTest.class);
 
         return suite;
     }

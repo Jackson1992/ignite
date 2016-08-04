@@ -102,7 +102,6 @@ class WebSessionV2 implements HttpSession {
         assert marshaller != null;
         assert ctx != null;
         assert ses != null || entity != null;
-        assert gridName != null;
 
         this.marshaller = marshaller;
         this.ctx = ctx;

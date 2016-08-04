@@ -30,7 +30,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Util class that sets and discards thread local
- * ignite configuration in {@link IgnitionEx} class.
+ * ignite grid name in {@link IgnitionEx} class.
  */
 public final class MarshallerUtils {
     /**
@@ -40,12 +40,13 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Marshal object to stream and set grid name thread local.
      *
-     * @param marshaller marshaller.
-     * @param obj object.
-     * @param out output stream.
+     * @param marshaller Marshaller.
+     * @param obj Object to marshal.
+     * @param out Output stream.
      * @param gridName Grid name.
-     * @throws IgniteCheckedException
+     * @throws IgniteCheckedException If fail.
      */
     public static void marshal(final Marshaller marshaller, final @Nullable Object obj,
         final OutputStream out, final String gridName) throws IgniteCheckedException {
@@ -64,12 +65,13 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Marshal object and set grid name thread local.
      *
-     * @param marshaller marshaller.
-     * @param obj object.
+     * @param marshaller Marshaller.
+     * @param obj Object to marshal.
      * @param gridName Grid name.
-     * @return serialized.
-     * @throws IgniteCheckedException
+     * @return Binary data.
+     * @throws IgniteCheckedException If fail.
      */
     public static byte[] marshal(final Marshaller marshaller, @Nullable Object obj,
         final String gridName) throws IgniteCheckedException {
@@ -88,13 +90,28 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Marshal object.
+     * <p>Use only when grid name is not available, f.e. in tests.</p>
      *
-     * @param marshaller marshaller.
-     * @param in input stream.
-     * @param clsLdr class loader.
+     * @param marshaller Marshaller.
+     * @param obj Object to marshal.
+     * @return Binary data.
+     * @throws IgniteCheckedException If fail.
+     */
+    public static byte[] marshal(final Marshaller marshaller, final @Nullable Object obj) throws IgniteCheckedException {
+        // This method used to keep marshaller usages in one place.
+        return marshaller.marshal(obj);
+    }
+
+    /**
+     * Unmarshal object from stream and set grid name thread local.
+     *
+     * @param marshaller Marshaller.
+     * @param in Input stream.
+     * @param clsLdr Class loader.
      * @param gridName Grid name.
-     * @param <T> target type.
-     * @return deserialized object.
+     * @param <T> Target type.
+     * @return Deserialized object.
      * @throws IgniteCheckedException
      */
     public static <T> T unmarshal(final Marshaller marshaller, InputStream in, @Nullable ClassLoader clsLdr,
@@ -114,14 +131,32 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Unmarshal object.
+     * <p>Use only when grid name is not available, f.e. in tests.</p>
      *
-     * @param marshaller marshaller.
-     * @param arr byte array.
-     * @param clsLdr class loader.
+     * @param marshaller Marshaller.
+     * @param arr Bianry data.
+     * @param clsLdr Class loader.
+     * @param <T> Target type.
+     * @return Unmarshalled object.
+     * @throws IgniteCheckedException If fail.
+     */
+    public static <T> T unmarshal(final Marshaller marshaller, byte[] arr, @Nullable ClassLoader clsLdr)
+        throws IgniteCheckedException {
+        // This method used to keep marshaller usages in one place.
+        return marshaller.unmarshal(arr, clsLdr);
+    }
+
+    /**
+     * Unmarshal object and set grid name thread local.
+     *
+     * @param marshaller Marshaller.
+     * @param arr Bianry data.
+     * @param clsLdr Class loader.
      * @param gridName Grid name.
-     * @param <T> target type
-     * @return deserialized object.
-     * @throws IgniteCheckedException
+     * @param <T> Target type
+     * @return Deserialized object.
+     * @throws IgniteCheckedException If fail.
      */
     public static <T> T unmarshal(final Marshaller marshaller, byte[] arr, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
@@ -140,14 +175,15 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Marshal and unmarshal object.
      *
-     * @param marshaller marshaller.
-     * @param obj object
-     * @param clsLdr class loader.
+     * @param marshaller Marshaller.
+     * @param obj Object to clone.
+     * @param clsLdr Class loader.
      * @param gridName Grid name.
-     * @param <T> target type.
-     * @return deserialized value.
-     * @throws IgniteCheckedException
+     * @param <T> Target type.
+     * @return Deserialized value.
+     * @throws IgniteCheckedException If fail.
      */
     public static <T> T clone(final Marshaller marshaller, T obj, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
@@ -166,13 +202,14 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Marshal object and set grid name thread local.
      *
-     * @param gridMarshaller grid marshaller.
-     * @param obj object.
-     * @param off offset.
-     * @param gridName ignite config.
-     * @return serialized data.
-     * @throws IOException
+     * @param gridMarshaller Grid marshaller.
+     * @param obj Object to marshal.
+     * @param off Offset.
+     * @param gridName Grid name.
+     * @return Serialized data.
+     * @throws IOException If fail.
      */
     public static ByteBuffer marshal(GridClientMarshaller gridMarshaller, Object obj, int off,
         String gridName) throws IOException {
@@ -191,13 +228,14 @@ public final class MarshallerUtils {
     }
 
     /**
+     * Unmarshal object and set grid name thread local.
      *
-     * @param gridMarshaller grid marshaller.
-     * @param bytes byte array.
-     * @param gridName ignite config.
-     * @param <T> target type.
-     * @return deserialized value.
-     * @throws IOException
+     * @param gridMarshaller Grid marshaller.
+     * @param bytes Binary data.
+     * @param gridName Grid name.
+     * @param <T> Target type.
+     * @return Deserialized value.
+     * @throws IOException If fail.
      */
     public static <T> T unmarshal(GridClientMarshaller gridMarshaller, byte[] bytes,
         String gridName) throws IOException {

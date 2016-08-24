@@ -5437,8 +5437,8 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                 while (!isInterrupted()) {
                     try {
-                        TcpDiscoveryAbstractMessage msg = MarshallerUtils.unmarshal(spi.marsh, in,
-                            U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().configuration().getGridName());
+                        TcpDiscoveryAbstractMessage msg = MarshallerUtils.unmarshal(spi.ignite().configuration().getGridName(), spi.marsh, in,
+                            U.resolveClassLoader(spi.ignite().configuration()));
 
                         msg.senderNodeId(nodeId);
 

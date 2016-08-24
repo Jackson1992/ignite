@@ -1590,8 +1590,8 @@ public class BinaryUtils {
         ByteArrayInputStream input = new ByteArrayInputStream(in.array(), in.position(), len);
 
         try {
-            return MarshallerUtils.unmarshal(ctx.optimizedMarsh(), input,
-                U.resolveClassLoader(clsLdr, ctx.configuration()), ctx.configuration().getGridName());
+            return MarshallerUtils.unmarshal(ctx.configuration().getGridName(), ctx.optimizedMarsh(), input,
+                U.resolveClassLoader(clsLdr, ctx.configuration()));
         }
         catch (IgniteCheckedException e) {
             throw new BinaryObjectException("Failed to unmarshal object with optimized marshaller", e);

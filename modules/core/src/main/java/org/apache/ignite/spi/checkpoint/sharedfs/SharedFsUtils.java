@@ -63,7 +63,7 @@ final class SharedFsUtils {
         InputStream in = new FileInputStream(file);
 
         try {
-            return (SharedFsCheckpointData) MarshallerUtils.unmarshal(m, in, U.gridClassLoader(), igniteCfg.getGridName());
+            return (SharedFsCheckpointData) MarshallerUtils.unmarshal(igniteCfg.getGridName(), m, in, U.gridClassLoader());
         }
         finally {
             U.close(in, log);

@@ -78,7 +78,7 @@ public class IgfsPaths implements Externalizable {
         else {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            MarshallerUtils.marshal(new JdkMarshaller(), payload, out, igfsCtx.kernalContext().config().getGridName());
+            MarshallerUtils.marshal(igfsCtx.kernalContext().gridName(), new JdkMarshaller(), payload, out);
 
             payloadBytes = out.toByteArray();
         }

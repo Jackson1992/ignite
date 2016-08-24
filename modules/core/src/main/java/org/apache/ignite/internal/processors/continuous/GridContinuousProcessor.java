@@ -1324,7 +1324,7 @@ public class GridContinuousProcessor extends GridProcessorAdapter {
         if (!msg.messages() &&
             msg.data() != null &&
             (nodes.size() > 1 || !ctx.localNodeId().equals(F.first(nodes).id())))
-            msg.dataBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, msg.data()));
+            msg.dataBytes(MarshallerUtils.marshal(ctx, msg.data()));
 
         for (ClusterNode node : nodes) {
             int cnt = 0;

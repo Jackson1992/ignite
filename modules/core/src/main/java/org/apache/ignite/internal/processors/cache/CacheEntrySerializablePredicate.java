@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.internal.GridDirectTransient;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.plugin.extensions.communication.MessageReader;
@@ -94,7 +95,7 @@ public class CacheEntrySerializablePredicate implements CacheEntryPredicate {
 
         p.prepareMarshal(ctx);
 
-        bytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), p);
+        bytes = CU.marshal(ctx, p);
     }
 
     /** {@inheritDoc} */

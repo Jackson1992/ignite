@@ -94,7 +94,7 @@ public class IgfsAckMessage extends IgfsCommunicationMessage {
     }
 
     /** {@inheritDoc} */
-    @Override public void prepareMarshal(Marshaller marsh, final GridKernalContext kernalCtx) throws IgniteCheckedException {
+    @Override public void prepareMarshal(Marshaller marsh, GridKernalContext kernalCtx) throws IgniteCheckedException {
         super.prepareMarshal(marsh, kernalCtx);
 
         if (err != null)

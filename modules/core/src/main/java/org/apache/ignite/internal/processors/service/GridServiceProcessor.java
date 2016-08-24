@@ -448,18 +448,16 @@ public class GridServiceProcessor extends GridProcessorAdapter {
         validate(cfg);
 
         if (!state.srvcCompatibility) {
-            Marshaller marsh = ctx.config().getMarshaller();
-
             LazyServiceConfiguration cfg0;
 
             try {
-                byte[] srvcBytes = MarshallerUtils.marshal(ctx.gridName(), marsh, cfg.getService());
+                byte[] srvcBytes = MarshallerUtils.marshal(ctx, cfg.getService());
 
                 cfg0 = new LazyServiceConfiguration(cfg, srvcBytes);
             }
             catch (IgniteCheckedException e) {
                 U.error(log, "Failed to marshal service with configured marshaller [srvc=" + cfg.getService()
-                    + ", marsh=" + marsh + "]", e);
+                    + ", marsh=" + ctx.config().getMarshaller() + "]", e);
 
                 return new GridFinishedFuture<>(e);
             }
@@ -1134,7 +1132,7 @@ public class GridServiceProcessor extends GridProcessorAdapter {
             Service svc = cfg.getService();
 
             try {
-                byte[] bytes = MarshallerUtils.marshal(ctx.gridName(), m, svc);
+                byte[] bytes = MarshallerUtils.marshal(ctx, svc);
 
                 Service cp = MarshallerUtils.unmarshal(m, bytes, U.resolveClassLoader(svc.getClass().getClassLoader(),
                     ctx.config()), ctx.gridName());

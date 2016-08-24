@@ -27,6 +27,7 @@ import org.apache.ignite.internal.GridDirectTransient;
 import org.apache.ignite.internal.processors.affinity.AffinityTopologyVersion;
 import org.apache.ignite.internal.processors.cache.GridCacheMessage;
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
@@ -184,7 +185,7 @@ public class GridDhtPartitionDemandMessage extends GridCacheMessage {
         super.prepareMarshal(ctx);
 
         if (topic != null)
-            topicBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), topic);
+            topicBytes = CU.marshal(ctx, topic);
     }
 
     /** {@inheritDoc} */

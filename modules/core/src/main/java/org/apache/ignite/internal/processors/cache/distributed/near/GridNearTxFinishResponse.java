@@ -24,6 +24,7 @@ import org.apache.ignite.internal.GridDirectTransient;
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.processors.cache.distributed.GridDistributedTxFinishResponse;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteUuid;
@@ -102,7 +103,7 @@ public class GridNearTxFinishResponse extends GridDistributedTxFinishResponse {
         super.prepareMarshal(ctx);
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
+            errBytes = CU.marshal(ctx, err);
     }
 
     /** {@inheritDoc} */

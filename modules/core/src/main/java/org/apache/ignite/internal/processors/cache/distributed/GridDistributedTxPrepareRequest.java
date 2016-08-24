@@ -41,6 +41,7 @@ import org.apache.ignite.internal.util.tostring.GridToStringBuilder;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
 import org.apache.ignite.internal.util.typedef.C1;
 import org.apache.ignite.internal.util.typedef.F;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteProductVersion;
 import org.apache.ignite.marshaller.MarshallerUtils;
@@ -333,7 +334,7 @@ public class GridDistributedTxPrepareRequest extends GridDistributedBaseMessage 
         // Marshal txNodes only if there is a node in topology with an older version.
         if (ctx.exchange().minimumNodeVersion(topologyVersion()).compareTo(TX_NODES_DIRECT_MARSHALLABLE_SINCE) < 0) {
             if (txNodes != null && txNodesBytes == null)
-                txNodesBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), txNodes);
+                txNodesBytes = CU.marshal(ctx, txNodes);
         }
         else {
             if (txNodesMsg == null)

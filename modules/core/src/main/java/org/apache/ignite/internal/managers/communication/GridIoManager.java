@@ -1118,7 +1118,7 @@ public class GridIoManager extends GridManagerAdapter<CommunicationSpi<Serializa
         }
         else {
             if (topicOrd < 0)
-                ioMsg.topicBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, topic));
+                ioMsg.topicBytes(MarshallerUtils.marshal(ctx, topic));
 
             try {
                 if ((CommunicationSpi)getSpi() instanceof TcpCommunicationSpi)
@@ -1378,10 +1378,10 @@ public class GridIoManager extends GridManagerAdapter<CommunicationSpi<Serializa
         byte[] serTopic = null;
 
         if (!loc) {
-            serMsg = MarshallerUtils.marshal(ctx.gridName(), marsh, msg);
+            serMsg = MarshallerUtils.marshal(ctx, msg);
 
             if (topic != null)
-                serTopic = MarshallerUtils.marshal(ctx.gridName(), marsh, topic);
+                serTopic = MarshallerUtils.marshal(ctx, topic);
         }
 
         GridDeployment dep = null;

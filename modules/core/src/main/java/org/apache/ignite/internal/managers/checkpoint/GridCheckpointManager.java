@@ -174,7 +174,7 @@ public class GridCheckpointManager extends GridManagerAdapter<CheckpointSpi> {
         try {
             switch (scope) {
                 case GLOBAL_SCOPE: {
-                    byte[] data = state == null ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, state);
+                    byte[] data = state == null ? null : MarshallerUtils.marshal(ctx, state);
 
                     saved = getSpi(ses.getCheckpointSpi()).saveCheckpoint(key, data, timeout, override);
 
@@ -205,7 +205,7 @@ public class GridCheckpointManager extends GridManagerAdapter<CheckpointSpi> {
                         timeout = ses.getEndTime() - now;
 
                     // Save it first to avoid getting null value on another node.
-                    byte[] data = state == null ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, state);
+                    byte[] data = state == null ? null : MarshallerUtils.marshal(ctx, state);
 
                     Set<String> keys = keyMap.get(ses.getId());
 

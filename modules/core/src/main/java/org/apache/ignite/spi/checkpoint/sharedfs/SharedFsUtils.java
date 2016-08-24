@@ -94,7 +94,7 @@ final class SharedFsUtils {
         try {
             out = new FileOutputStream(file);
 
-            MarshallerUtils.marshal(m, data, out, igniteCfg.getGridName());
+            MarshallerUtils.marshal(igniteCfg.getGridName(), m, data, out);
         }
         finally {
             U.close(out, log);

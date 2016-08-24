@@ -337,8 +337,8 @@ public class RendezvousAffinityFunction implements AffinityFunction, Externaliza
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-                byte[] nodeHashBytes = MarshallerUtils.marshal(
-                    ignite.name(), ignite.configuration().getMarshaller(), nodeHash);
+                byte[] nodeHashBytes =
+                    MarshallerUtils.marshal(ignite.name(), ignite.configuration().getMarshaller(), nodeHash);
 
                 out.write(U.intToBytes(part), 0, 4); // Avoid IOException.
                 out.write(nodeHashBytes, 0, nodeHashBytes.length); // Avoid IOException.

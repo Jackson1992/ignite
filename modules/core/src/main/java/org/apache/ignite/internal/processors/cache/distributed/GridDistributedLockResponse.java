@@ -31,6 +31,7 @@ import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
 import org.apache.ignite.internal.util.typedef.F;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteUuid;
@@ -203,7 +204,7 @@ public class GridDistributedLockResponse extends GridDistributedBaseMessage {
         prepareMarshalCacheObjects(vals, ctx.cacheContext(cacheId));
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
+            errBytes = CU.marshal(ctx, err);
     }
 
     /** {@inheritDoc} */

@@ -914,7 +914,7 @@ public class GridTaskProcessor extends GridProcessorAdapter {
                     GridTaskSessionRequest req = new GridTaskSessionRequest(
                         ses.getId(),
                         null,
-                        loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, attrs),
+                        loc ? null : MarshallerUtils.marshal(ctx, attrs),
                         attrs);
 
                     // Make sure to go through IO manager always, since order
@@ -1315,7 +1315,7 @@ public class GridTaskProcessor extends GridProcessorAdapter {
                     ctx.io().send(nodeId, topic,
                         new GridJobSiblingsResponse(
                             loc ? siblings : null,
-                            loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, siblings)),
+                            loc ? null : MarshallerUtils.marshal(ctx, siblings)),
                         SYSTEM_POOL);
                 }
                 catch (IgniteCheckedException e) {

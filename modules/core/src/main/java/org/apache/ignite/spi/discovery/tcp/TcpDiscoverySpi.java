@@ -1378,7 +1378,7 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements DiscoverySpi, T
         IgniteCheckedException err = null;
 
         try {
-            MarshallerUtils.marshal(marsh, msg, out, ignite.configuration().getGridName());
+            MarshallerUtils.marshal(ignite.name(), marsh, msg, out);
         }
         catch (IgniteCheckedException e) {
             err = e;

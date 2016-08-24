@@ -78,7 +78,7 @@ class GridAffinityUtils {
             throw new IgniteDeploymentCheckedException("Failed to deploy affinity object with class: " + cls.getName());
 
         return new GridAffinityMessage(
-            MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), o),
+            MarshallerUtils.marshal(ctx, o),
             cls.getName(),
             dep.classLoaderId(),
             dep.deployMode(),

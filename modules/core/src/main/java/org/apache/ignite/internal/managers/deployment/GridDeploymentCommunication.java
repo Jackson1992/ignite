@@ -446,7 +446,7 @@ class GridDeploymentCommunication {
             long start = U.currentTimeMillis();
 
             if (req.responseTopic() != null && !ctx.localNodeId().equals(dstNode.id()))
-                req.responseTopicBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, req.responseTopic()));
+                req.responseTopicBytes(MarshallerUtils.marshal(ctx, req.responseTopic()));
 
             ctx.io().send(dstNode, TOPIC_CLASSLOAD, req, GridIoPolicy.P2P_POOL);
 

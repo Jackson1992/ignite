@@ -26,6 +26,7 @@ import org.apache.ignite.internal.processors.affinity.AffinityTopologyVersion;
 import org.apache.ignite.internal.processors.cache.GridCacheMessage;
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
@@ -107,7 +108,7 @@ public class GridDhtAffinityAssignmentResponse extends GridCacheMessage {
         super.prepareMarshal(ctx);
 
         if (affAssignment != null)
-            affAssignmentBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), affAssignment);
+            affAssignmentBytes = CU.marshal(ctx, affAssignment);
     }
 
     /** {@inheritDoc} */

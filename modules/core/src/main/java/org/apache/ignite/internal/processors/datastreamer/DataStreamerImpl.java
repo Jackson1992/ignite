@@ -1360,11 +1360,11 @@ public class DataStreamerImpl<K, V> implements IgniteDataStreamer<K, V>, Delayed
                     if (updaterBytes == null) {
                         assert rcvr != null;
 
-                        updaterBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), rcvr);
+                        updaterBytes = MarshallerUtils.marshal(ctx, rcvr);
                     }
 
                     if (topicBytes == null)
-                        topicBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), topic);
+                        topicBytes = MarshallerUtils.marshal(ctx, topic);
                 }
                 catch (IgniteCheckedException e) {
                     U.error(log, "Failed to marshal (request will not be sent).", e);

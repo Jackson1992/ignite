@@ -746,11 +746,11 @@ public class GridJobWorker extends GridWorker implements GridTimeoutObject {
                                 ctx.localNodeId(),
                                 ses.getId(),
                                 ses.getJobId(),
-                                loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, ex),
+                                loc ? null : MarshallerUtils.marshal(ctx, ex),
                                 loc ? ex : null,
-                                loc ? null: MarshallerUtils.marshal(ctx.gridName(), marsh, res),
+                                loc ? null: MarshallerUtils.marshal(ctx, res),
                                 loc ? res : null,
-                                loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, attrs),
+                                loc ? null : MarshallerUtils.marshal(ctx, attrs),
                                 loc ? attrs : null,
                                 isCancelled());
 

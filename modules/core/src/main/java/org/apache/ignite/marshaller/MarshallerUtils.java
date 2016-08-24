@@ -18,51 +18,37 @@
 package org.apache.ignite.marshaller;
 
 import org.apache.ignite.IgniteCheckedException;
-import org.apache.ignite.internal.LocalGridName;
+import org.apache.ignite.internal.GridKernalContext;
 import org.apache.ignite.internal.IgnitionEx;
+import org.apache.ignite.internal.LocalGridName;
 import org.apache.ignite.internal.client.marshaller.GridClientMarshaller;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 
 /**
  * Utility marshaller methods.
  */
 public final class MarshallerUtils {
     /**
-     * Marshal object. Used when grid name is not available, f.e. in tests.
+     * Marshal object with provided node name.
      *
+     * @param name Grid name.
      * @param marsh Marshaller.
      * @param obj Object to marshal.
      * @return Result.
      * @throws IgniteCheckedException If failed.
      */
-    public static byte[] marshal(final Marshaller marsh, final @Nullable Object obj) throws IgniteCheckedException {
-        // This method used to keep marshaller usages in one place.
-        return marsh.marshal(obj);
-    }
-
-    /**
-     * Marshal object setting provided node name.
-     *
-     * @param gridName Node name.
-     * @param marsh Marshaller.
-     * @param obj Object to marshal.
-     * @return Result.
-     * @throws IgniteCheckedException If failed.
-     */
-    public static byte[] marshal(final String gridName, final Marshaller marsh, @Nullable Object obj)
-        throws IgniteCheckedException {
+    public static byte[] marshal(String name, Marshaller marsh, @Nullable Object obj) throws IgniteCheckedException {
         final LocalGridName gridNameTl = gridName();
 
         final String gridNameStr = gridNameTl.getGridName();
         final boolean init = gridNameTl.isSet();
 
         try {
-            gridNameTl.setGridName(true, gridName);
+            gridNameTl.setGridName(true, name);
 
             return marsh.marshal(obj);
         }
@@ -71,35 +57,54 @@ public final class MarshallerUtils {
         }
     }
 
-
-
-
-
-
     /**
      * Marshal object to stream and set grid name thread local.
      *
+     * @param name Grid name.
      * @param marshaller Marshaller.
      * @param obj Object to marshal.
      * @param out Output stream.
-     * @param gridName Grid name.
      * @throws IgniteCheckedException If fail.
      */
-    public static void marshal(final Marshaller marshaller, final @Nullable Object obj,
-        final OutputStream out, final String gridName) throws IgniteCheckedException {
+    public static void marshal(final String name, final Marshaller marshaller, final @Nullable Object obj,
+        final OutputStream out) throws IgniteCheckedException {
         final LocalGridName gridNameTl = gridName();
 
         final String gridNameStr = gridNameTl.getGridName();
         final boolean init = gridNameTl.isSet();
 
         try {
-            gridNameTl.setGridName(true, gridName);
+            gridNameTl.setGridName(true, name);
 
             marshaller.marshal(obj, out);
         } finally {
             gridNameTl.setGridName(init, gridNameStr);
         }
     }
+
+    /**
+     * Marshal object with node name taken from provided kernal context.
+     *
+     * @param ctx Kernal context.
+     * @param obj Object to marshal.
+     * @return Result.
+     * @throws IgniteCheckedException If failed.
+     */
+    public static byte[] marshal(GridKernalContext ctx, @Nullable Object obj) throws IgniteCheckedException {
+        return marshal(ctx.gridName(), ctx.config().getMarshaller(), obj);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Unmarshal object from stream and set grid name thread local.
@@ -110,7 +115,7 @@ public final class MarshallerUtils {
      * @param gridName Grid name.
      * @param <T> Target type.
      * @return Deserialized object.
-     * @throws IgniteCheckedException
+     * @throws IgniteCheckedException If failed.
      */
     public static <T> T unmarshal(final Marshaller marshaller, InputStream in, @Nullable ClassLoader clsLdr,
         final String gridName) throws IgniteCheckedException {
@@ -194,32 +199,6 @@ public final class MarshallerUtils {
             gridNameTl.setGridName(true, gridName);
 
             return marshaller.unmarshal(marshaller.marshal(obj), clsLdr);
-        } finally {
-            gridNameTl.setGridName(init, gridNameStr);
-        }
-    }
-
-    /**
-     * Marshal object and set grid name thread local.
-     *
-     * @param gridMarshaller Grid marshaller.
-     * @param obj Object to marshal.
-     * @param off Offset.
-     * @param gridName Grid name.
-     * @return Serialized data.
-     * @throws IOException If fail.
-     */
-    public static ByteBuffer marshal(GridClientMarshaller gridMarshaller, Object obj, int off,
-        String gridName) throws IOException {
-        final LocalGridName gridNameTl = gridName();
-
-        final String gridNameStr = gridNameTl.getGridName();
-        final boolean init = gridNameTl.isSet();
-
-        try {
-            gridNameTl.setGridName(true, gridName);
-
-            return gridMarshaller.marshal(obj, off);
         } finally {
             gridNameTl.setGridName(init, gridNameStr);
         }

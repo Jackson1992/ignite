@@ -1891,4 +1891,16 @@ public class GridCacheUtils {
             ? DEFAULT_TX_CFG
             : cfg.getTransactionConfiguration();
     }
+
+    /**
+     * Marshal object.
+     *
+     * @param ctx Shared context.
+     * @param obj Object.
+     * @return Result.
+     * @throws IgniteCheckedException If failed.
+     */
+    public static byte[] marshal(GridCacheSharedContext ctx, Object obj) throws IgniteCheckedException {
+        return MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), obj);
+    }
 }

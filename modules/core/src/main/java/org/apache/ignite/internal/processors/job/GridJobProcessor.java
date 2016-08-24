@@ -404,7 +404,7 @@ public class GridJobProcessor extends GridProcessorAdapter {
         boolean loc = ctx.localNodeId().equals(taskNode.id()) && !ctx.config().isMarshalLocalJobs();
 
         GridTaskSessionRequest req = new GridTaskSessionRequest(ses.getId(), ses.getJobId(),
-            loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, attrs), attrs);
+            loc ? null : MarshallerUtils.marshal(ctx, attrs), attrs);
 
         Object topic = TOPIC_TASK.topic(ses.getJobId(), ctx.discovery().localNode().id());
 
@@ -517,7 +517,7 @@ public class GridJobProcessor extends GridProcessorAdapter {
             ctx.io().send(taskNode, TOPIC_JOB_SIBLINGS,
                 new GridJobSiblingsRequest(ses.getId(),
                     loc ? topic : null,
-                    loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, topic)),
+                    loc ? null : MarshallerUtils.marshal(ctx, topic)),
                 SYSTEM_POOL);
 
             // 4. Listen to discovery events.
@@ -1334,11 +1334,11 @@ public class GridJobProcessor extends GridProcessorAdapter {
                 locNodeId,
                 req.getSessionId(),
                 req.getJobId(),
-                loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, ex),
+                loc ? null : MarshallerUtils.marshal(ctx, ex),
                 ex,
-                loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, null),
+                loc ? null : MarshallerUtils.marshal(ctx, null),
                 null,
-                loc ? null : MarshallerUtils.marshal(ctx.gridName(), marsh, null),
+                loc ? null : MarshallerUtils.marshal(ctx, null),
                 null,
                 false);
 

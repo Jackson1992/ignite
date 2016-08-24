@@ -33,6 +33,7 @@ import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.processors.cache.KeyCacheObject;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
@@ -168,7 +169,7 @@ public class GridDhtAtomicUpdateResponse extends GridCacheMessage implements Gri
 
         prepareMarshalCacheObjects(nearEvicted, cctx);
 
-        errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
+        errBytes = CU.marshal(ctx, err);
     }
 
     /** {@inheritDoc} */

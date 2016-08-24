@@ -933,7 +933,7 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
 
             ioMgr.addMessageListener(resTopic, resLsnr);
 
-            byte[] serFilter = MarshallerUtils.marshal(ctx.gridName(), marsh, p);
+            byte[] serFilter = MarshallerUtils.marshal(ctx, p);
 
             GridDeployment dep = ctx.deploy().deploy(p.getClass(), U.detectClassLoader(p.getClass()));
 
@@ -1024,7 +1024,7 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
             ctx.io().send(locNode, topic, msg, plc);
 
         if (!rmtNodes.isEmpty()) {
-            msg.responseTopicBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, msg.responseTopic()));
+            msg.responseTopicBytes(MarshallerUtils.marshal(ctx, msg.responseTopic()));
 
             ctx.io().send(rmtNodes, topic, msg, plc);
         }
@@ -1144,8 +1144,8 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
                         log.debug("Sending event query response to node [nodeId=" + nodeId + "res=" + res + ']');
 
                     if (!ctx.localNodeId().equals(nodeId)) {
-                        res.eventsBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, res.events()));
-                        res.exceptionBytes(MarshallerUtils.marshal(ctx.gridName(), marsh, res.exception()));
+                        res.eventsBytes(MarshallerUtils.marshal(ctx, res.events()));
+                        res.exceptionBytes(MarshallerUtils.marshal(ctx, res.exception()));
                     }
 
                     ctx.io().send(node, req.responseTopic(), res, PUBLIC_POOL);

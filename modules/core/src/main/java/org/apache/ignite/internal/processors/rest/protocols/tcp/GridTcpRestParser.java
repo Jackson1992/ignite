@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.UUID;
 import org.apache.ignite.IgniteCheckedException;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.client.marshaller.GridClientMarshaller;
 import org.apache.ignite.internal.processors.rest.client.message.GridClientHandshakeRequest;
 import org.apache.ignite.internal.processors.rest.client.message.GridClientHandshakeResponse;
@@ -210,7 +209,7 @@ public class GridTcpRestParser implements GridNioParser {
         else {
             GridClientMarshaller marsh = marshaller(ses);
 
-            ByteBuffer res = MarshallerUtils.marshal(marsh, msg, 45, ses.gridName());
+            ByteBuffer res = marsh.marshal(msg, 45);
 
             ByteBuffer slice = res.slice();
 
@@ -760,8 +759,7 @@ public class GridTcpRestParser implements GridNioParser {
      * @return Serialization flags.
      * @throws IgniteCheckedException If JDK serialization failed.
      */
-    private int encodeObj(Object obj, ByteArrayOutputStream out,
-        final String gridName) throws IgniteCheckedException {
+    private int encodeObj(Object obj, ByteArrayOutputStream out, final String gridName) throws IgniteCheckedException {
         int flags = 0;
 
         byte[] data = null;
@@ -809,7 +807,7 @@ public class GridTcpRestParser implements GridNioParser {
             flags |= BYTE_ARR_FLAG;
         }
         else {
-            MarshallerUtils.marshal(jdkMarshaller, obj, out, gridName);
+            MarshallerUtils.marshal(gridName, jdkMarshaller, obj, out);
 
             flags |= SERIALIZED_FLAG;
         }

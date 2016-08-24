@@ -28,6 +28,7 @@ import org.apache.ignite.internal.processors.affinity.AffinityTopologyVersion;
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
+import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.apache.ignite.internal.util.typedef.internal.U;
@@ -134,10 +135,10 @@ public class GridDhtPartitionsFullMessage extends GridDhtPartitionsAbstractMessa
         super.prepareMarshal(ctx);
 
         if (parts != null && partsBytes == null)
-            partsBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), parts);
+            partsBytes = CU.marshal(ctx, parts);
 
         if (partCntrs != null)
-            partCntrsBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), partCntrs);
+            partCntrsBytes = CU.marshal(ctx, partCntrs);
     }
 
     /**

@@ -430,8 +430,7 @@ class ClientImpl extends TcpDiscoveryImpl {
             throw new IgniteClientDisconnectedException(null, "Failed to send custom message: client is disconnected.");
 
         try {
-            sockWriter.sendMessage(new TcpDiscoveryCustomEventMessage(getLocalNodeId(), evt,
-                MarshallerUtils.marshal(spi.ignite().name(), spi.marsh, evt)));
+            sockWriter.sendMessage(new TcpDiscoveryCustomEventMessage(getLocalNodeId(), evt, marshal(evt)));
         }
         catch (IgniteCheckedException e) {
             throw new IgniteSpiException("Failed to marshal custom event: " + evt, e);
@@ -684,9 +683,10 @@ class ClientImpl extends TcpDiscoveryImpl {
             // Use security-unsafe getter.
             Map<String, Object> attrs = new HashMap<>(node.getAttributes());
 
-            attrs.put(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS,
-                    MarshallerUtils.marshal(spi.ignite().name(), spi.marsh, attrs.get(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS)
-                    ));
+            attrs.put(
+                IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS,
+                marshal(attrs.get(IgniteNodeAttributes.ATTR_SECURITY_CREDENTIALS))
+            );
 
             node.setAttributes(attrs);
         }

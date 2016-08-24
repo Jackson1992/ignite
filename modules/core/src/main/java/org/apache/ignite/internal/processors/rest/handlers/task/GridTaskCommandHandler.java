@@ -136,7 +136,7 @@ public class GridTaskCommandHandler extends GridRestCommandHandlerAdapter {
                             res.error(err.getMessage());
                         else {
                             res.result(desc.result());
-                            res.resultBytes(MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), desc.result()));
+                            res.resultBytes(MarshallerUtils.marshal(ctx, desc.result()));
                         }
                     }
                     else
@@ -495,7 +495,7 @@ public class GridTaskCommandHandler extends GridRestCommandHandlerAdapter {
 
             // 2. Send message.
             try {
-                byte[] topicBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), topic);
+                byte[] topicBytes = MarshallerUtils.marshal(ctx, topic);
 
                 ctx.io().send(taskNode, TOPIC_REST, new GridTaskResultRequest(taskId, topic, topicBytes), SYSTEM_POOL);
             }

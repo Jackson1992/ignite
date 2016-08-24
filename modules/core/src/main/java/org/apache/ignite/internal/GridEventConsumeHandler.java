@@ -370,7 +370,7 @@ class GridEventConsumeHandler implements GridContinuousHandler {
 
             depInfo = new GridDeploymentInfoBean(dep);
 
-            filterBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), filter);
+            filterBytes = MarshallerUtils.marshal(ctx, filter);
         }
     }
 
@@ -491,7 +491,7 @@ class GridEventConsumeHandler implements GridContinuousHandler {
         void p2pMarshal(final GridKernalContext ctx) throws IgniteCheckedException {
             assert ctx.config().getMarshaller() != null;
 
-            bytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), evt);
+            bytes = MarshallerUtils.marshal(ctx, evt);
         }
 
         /**

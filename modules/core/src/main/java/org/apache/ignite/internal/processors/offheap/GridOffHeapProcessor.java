@@ -109,7 +109,7 @@ public class GridOffHeapProcessor extends GridProcessorAdapter {
     private byte[] keyBytes(KeyCacheObject key, @Nullable byte[] keyBytes) throws IgniteCheckedException {
         assert key != null;
 
-        return keyBytes != null ? keyBytes : MarshallerUtils.marshal(ctx.gridName(), marsh, key);
+        return keyBytes != null ? keyBytes : MarshallerUtils.marshal(ctx, key);
     }
 
     /**

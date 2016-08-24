@@ -142,7 +142,7 @@ public class MarshallerUtils {
      * @return Deserialized object.
      * @throws IgniteCheckedException If failed.
      */
-    public static <T> T unmarshal( Marshaller marsh, byte[] arr, @Nullable ClassLoader ldr,
+    public static <T> T unmarshal(Marshaller marsh, byte[] arr, @Nullable ClassLoader ldr,
         String name) throws IgniteCheckedException {
         LocalGridName gridNameTl = gridName();
 

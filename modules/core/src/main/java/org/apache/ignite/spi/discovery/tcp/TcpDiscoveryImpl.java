@@ -17,6 +17,7 @@
 
 package org.apache.ignite.spi.discovery.tcp;
 
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -339,5 +340,17 @@ abstract class TcpDiscoveryImpl {
      */
     protected byte[] marshal(Object obj) throws IgniteCheckedException {
         return MarshallerUtils.marshal(spi.ignite().name(), spi.marsh, obj);
+    }
+
+    /**
+     * Unmarshal object.
+     *
+     * @param in Input stream.
+     * @return Result.
+     * @throws IgniteCheckedException If failed.
+     */
+    protected <T> T unmarshal(InputStream in) throws IgniteCheckedException {
+        return MarshallerUtils.unmarshal(spi.ignite().configuration().getGridName(), spi.marsh, in,
+            U.resolveClassLoader(spi.ignite().configuration()));
     }
 }

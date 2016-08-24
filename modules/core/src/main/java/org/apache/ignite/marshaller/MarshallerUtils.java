@@ -100,10 +100,32 @@ public class MarshallerUtils {
 
 
 
+    /**
+     * Unmarshal object and set grid name thread local.
+     *
+     * @param marsh Marshaller.
+     * @param arr Binary data.
+     * @param ldr Class loader.
+     * @param name Grid name.
+     * @return Deserialized object.
+     * @throws IgniteCheckedException If failed.
+     */
+    public static <T> T unmarshal(Marshaller marsh, byte[] arr, @Nullable ClassLoader ldr, String name)
+        throws IgniteCheckedException {
+        LocalGridName gridNameTl = gridName();
 
+        String gridNameStr = gridNameTl.getGridName();
+        boolean init = gridNameTl.isSet();
 
+        try {
+            gridNameTl.setGridName(true, name);
 
-
+            return marsh.unmarshal(arr, ldr);
+        }
+        finally {
+            gridNameTl.setGridName(init, gridNameStr);
+        }
+    }
 
     /**
      * Unmarshal object from stream and set grid name thread local.
@@ -126,33 +148,6 @@ public class MarshallerUtils {
             gridNameTl.setGridName(true, name);
 
             return marsh.unmarshal(in, ldr);
-        }
-        finally {
-            gridNameTl.setGridName(init, gridNameStr);
-        }
-    }
-
-    /**
-     * Unmarshal object and set grid name thread local.
-     *
-     * @param marsh Marshaller.
-     * @param arr Binary data.
-     * @param ldr Class loader.
-     * @param name Grid name.
-     * @return Deserialized object.
-     * @throws IgniteCheckedException If failed.
-     */
-    public static <T> T unmarshal(Marshaller marsh, byte[] arr, @Nullable ClassLoader ldr,
-        String name) throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
-
-        try {
-            gridNameTl.setGridName(true, name);
-
-            return marsh.unmarshal(arr, ldr);
         }
         finally {
             gridNameTl.setGridName(init, gridNameStr);

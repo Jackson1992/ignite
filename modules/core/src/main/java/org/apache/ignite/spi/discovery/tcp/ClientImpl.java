@@ -887,8 +887,7 @@ class ClientImpl extends TcpDiscoveryImpl {
                         TcpDiscoveryAbstractMessage msg;
 
                         try {
-                            msg = MarshallerUtils.unmarshal(spi.ignite().configuration().getGridName(), spi.marsh, in,
-                                U.resolveClassLoader(spi.ignite().configuration()));
+                            msg = unmarshal(in);
                         }
                         catch (IgniteCheckedException e) {
                             if (log.isDebugEnabled())
@@ -1213,8 +1212,7 @@ class ClientImpl extends TcpDiscoveryImpl {
                         List<TcpDiscoveryAbstractMessage> msgs = null;
 
                         while (!isInterrupted()) {
-                            TcpDiscoveryAbstractMessage msg = MarshallerUtils.unmarshal(spi.ignite().configuration().getGridName(), spi.marsh, in,
-                                U.resolveClassLoader(spi.ignite().configuration()));
+                            TcpDiscoveryAbstractMessage msg = unmarshal(in);
 
                             if (msg instanceof TcpDiscoveryClientReconnectMessage) {
                                 TcpDiscoveryClientReconnectMessage res = (TcpDiscoveryClientReconnectMessage)msg;

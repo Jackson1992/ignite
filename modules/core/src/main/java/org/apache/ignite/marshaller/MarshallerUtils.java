@@ -19,8 +19,7 @@ package org.apache.ignite.marshaller;
 
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.internal.GridKernalContext;
-import org.apache.ignite.internal.IgnitionEx;
-import org.apache.ignite.internal.LocalGridName;
+import org.apache.ignite.internal.util.IgniteUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -40,18 +39,13 @@ public class MarshallerUtils {
      * @throws IgniteCheckedException If failed.
      */
     public static byte[] marshal(String name, Marshaller marsh, @Nullable Object obj) throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(name);
 
         try {
-            gridNameTl.setGridName(true, name);
-
             return marsh.marshal(obj);
         }
         finally {
-            gridNameTl.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
     }
 
@@ -66,18 +60,13 @@ public class MarshallerUtils {
      */
     public static void marshal(String name, Marshaller marshaller, @Nullable Object obj, OutputStream out)
         throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(name);
 
         try {
-            gridNameTl.setGridName(true, name);
-
             marshaller.marshal(obj, out);
         }
         finally {
-            gridNameTl.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
     }
 
@@ -93,13 +82,6 @@ public class MarshallerUtils {
         return marshal(ctx.gridName(), ctx.config().getMarshaller(), obj);
     }
 
-
-
-
-
-
-
-
     /**
      * Unmarshal object and set grid name thread local.
      *
@@ -112,18 +94,13 @@ public class MarshallerUtils {
      */
     public static <T> T unmarshal(String name, Marshaller marsh, byte[] arr, @Nullable ClassLoader ldr)
         throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(name);
 
         try {
-            gridNameTl.setGridName(true, name);
-
             return marsh.unmarshal(arr, ldr);
         }
         finally {
-            gridNameTl.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
     }
 
@@ -139,18 +116,13 @@ public class MarshallerUtils {
      */
     public static <T> T unmarshal(String name, Marshaller marsh, InputStream in, @Nullable ClassLoader ldr)
         throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(name);
 
         try {
-            gridNameTl.setGridName(true, name);
-
             return marsh.unmarshal(in, ldr);
         }
         finally {
-            gridNameTl.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
     }
 
@@ -166,26 +138,14 @@ public class MarshallerUtils {
      */
     public static <T> T marshalUnmarshal(String name, Marshaller marsh, T obj, @Nullable ClassLoader clsLdr)
         throws IgniteCheckedException {
-        LocalGridName gridNameTl = gridName();
-
-        String gridNameStr = gridNameTl.getGridName();
-        boolean init = gridNameTl.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(name);
 
         try {
-            gridNameTl.setGridName(true, name);
-
             return marsh.unmarshal(marsh.marshal(obj), clsLdr);
         }
         finally {
-            gridNameTl.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
-    }
-
-    /**
-     * @return Grid name thread local.
-     */
-    private static LocalGridName gridName() {
-        return IgnitionEx.gridNameThreadLocal();
     }
 
     /**

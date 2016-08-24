@@ -33,10 +33,9 @@ import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.binary.BinaryObjectException;
 import org.apache.ignite.binary.BinaryRawWriter;
 import org.apache.ignite.binary.BinaryWriter;
-import org.apache.ignite.internal.LocalGridName;
-import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.binary.streams.BinaryHeapOutputStream;
 import org.apache.ignite.internal.binary.streams.BinaryOutputStream;
+import org.apache.ignite.internal.util.IgniteUtils;
 import org.apache.ignite.internal.util.typedef.internal.A;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.jetbrains.annotations.Nullable;
@@ -141,18 +140,13 @@ public class BinaryWriterExImpl implements BinaryWriter, BinaryRawWriterEx, Obje
      * @throws org.apache.ignite.binary.BinaryObjectException In case of error.
      */
     void marshal(Object obj, boolean enableReplace) throws BinaryObjectException {
-        final LocalGridName gridName = IgnitionEx.gridNameThreadLocal();
-
-        final String gridNameStr = gridName.getGridName();
-        final boolean init = gridName.isSet();
+        String oldName = IgniteUtils.setCurrentIgniteName(ctx.configuration().getGridName());
 
         try {
-            gridName.setGridName(true, ctx.configuration().getGridName());
-
             marshal0(obj, enableReplace);
         }
         finally {
-            gridName.setGridName(init, gridNameStr);
+            IgniteUtils.restoreCurrentIgniteName(oldName);
         }
     }
 

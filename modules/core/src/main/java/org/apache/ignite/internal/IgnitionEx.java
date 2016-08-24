@@ -166,13 +166,6 @@ public class IgnitionEx {
     private static final Collection<IgnitionListener> lsnrs = new GridConcurrentHashSet<>(4);
 
     /** */
-    private static final ThreadLocal<LocalGridName> GRID_NAME_THREAD_LOC = new ThreadLocal<LocalGridName>() {
-        @Override protected LocalGridName initialValue() {
-            return new LocalGridNameImpl();
-        }
-    };
-
-    /** */
     private static ThreadLocal<Boolean> daemon = new ThreadLocal<Boolean>() {
         @Override protected Boolean initialValue() {
             return false;
@@ -1286,22 +1279,21 @@ public class IgnitionEx {
     }
 
     /**
-     * Gets a name of the grid from thread local config, which is owner of current thread. An Exception is thrown if
-     * current thread is not an {@link IgniteThread}.
+     * Gets a name of the grid from thread local config, which is owner of current thread.
      *
      * @return Grid instance related to current thread
      * @throws IllegalArgumentException Thrown to indicate, that current thread is not an {@link IgniteThread}.
      */
     public static IgniteKernal localIgnite() throws IllegalArgumentException {
-        final LocalGridName gridName = GRID_NAME_THREAD_LOC.get();
+        String gridName = U.getCurrentIgniteName();
 
-        if (gridName.isSet())
-            return gridx(gridName.getGridName());
+        if (U.isCurrentIgniteNameSet(gridName))
+            return gridx(gridName);
         else if (Thread.currentThread() instanceof IgniteThread)
             return gridx(((IgniteThread)Thread.currentThread()).getGridName());
         else
             throw new IllegalArgumentException("Ignite grid name thread local must be set or" +
-                    " this method should be accessed under " + IgniteThread.class.getName());
+                " this method should be accessed under " + IgniteThread.class.getName());
     }
 
     /**
@@ -1364,15 +1356,6 @@ public class IgnitionEx {
 
         for (IgnitionListener lsnr : lsnrs)
             lsnr.onStateChange(gridName, state);
-    }
-
-    /**
-     * Get ignite config from thread local.
-     *
-     * @return Local grid name.
-     */
-    public static LocalGridName gridNameThreadLocal() {
-        return GRID_NAME_THREAD_LOC.get();
     }
 
     /**
@@ -2540,33 +2523,6 @@ public class IgnitionEx {
             public void setCounter(int cnt) {
                 this.cnt = cnt;
             }
-        }
-    }
-
-    /**
-     *
-     */
-    private static class LocalGridNameImpl implements LocalGridName {
-        /** Indicates whether value is initial or not. */
-        private boolean valSet;
-
-        /** Grid name. */
-        private String gridName;
-
-        /** {@inheritDoc} */
-        @Override public boolean isSet() {
-            return valSet;
-        }
-
-        /** {@inheritDoc} */
-        @Override public String getGridName() {
-            return gridName;
-        }
-
-        /** {@inheritDoc} */
-        @Override public void setGridName(final boolean set, final String gridName) {
-            this.valSet = set;
-            this.gridName = gridName;
         }
     }
 }

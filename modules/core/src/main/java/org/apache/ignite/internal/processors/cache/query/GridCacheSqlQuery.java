@@ -142,7 +142,7 @@ public class GridCacheSqlQuery implements Message {
 
         assert params != null;
 
-        paramsBytes = MarshallerUtils.marshal(m, params, kernalCtx.gridName());
+        paramsBytes = MarshallerUtils.marshal(kernalCtx.gridName(), m, params);
     }
 
     /**

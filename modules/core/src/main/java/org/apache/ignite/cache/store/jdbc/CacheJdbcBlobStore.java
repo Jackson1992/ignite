@@ -561,7 +561,7 @@ public class CacheJdbcBlobStore<K, V> extends CacheStoreAdapter<K, V> {
      * @throws IgniteCheckedException If failed to convert.
      */
     protected byte[] toBytes(Object obj) throws IgniteCheckedException {
-        return MarshallerUtils.marshal(marsh, obj, ignite.name());
+        return MarshallerUtils.marshal(ignite.name(), marsh, obj);
     }
 
     /**

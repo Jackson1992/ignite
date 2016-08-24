@@ -191,7 +191,7 @@ public class GridNearGetResponse extends GridCacheMessage implements GridCacheDe
         }
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
     }
 
     /** {@inheritDoc} */

@@ -168,7 +168,7 @@ public class GridDhtAtomicUpdateResponse extends GridCacheMessage implements Gri
 
         prepareMarshalCacheObjects(nearEvicted, cctx);
 
-        errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+        errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
     }
 
     /** {@inheritDoc} */

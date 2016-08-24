@@ -50,7 +50,6 @@ import org.apache.ignite.internal.util.typedef.T3;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgnitePredicate;
-import org.apache.ignite.marshaller.Marshaller;
 import org.apache.ignite.marshaller.MarshallerUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -371,7 +370,7 @@ class GridEventConsumeHandler implements GridContinuousHandler {
 
             depInfo = new GridDeploymentInfoBean(dep);
 
-            filterBytes = MarshallerUtils.marshal(ctx.config().getMarshaller(), filter, ctx.gridName());
+            filterBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), filter);
         }
     }
 
@@ -492,7 +491,7 @@ class GridEventConsumeHandler implements GridContinuousHandler {
         void p2pMarshal(final GridKernalContext ctx) throws IgniteCheckedException {
             assert ctx.config().getMarshaller() != null;
 
-            bytes = MarshallerUtils.marshal(ctx.config().getMarshaller(), evt, ctx.gridName());
+            bytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), evt);
         }
 
         /**

@@ -91,8 +91,8 @@ public class DataStreamProcessor<K, V> extends GridProcessorAdapter {
         if (ctx.config().isDaemon())
             return;
 
-        marshErrBytes = MarshallerUtils.marshal(marsh, new IgniteCheckedException("Failed to marshal response error, " +
-            "see node log for details."), ctx.gridName());
+        marshErrBytes = MarshallerUtils.marshal(ctx.gridName(), marsh, new IgniteCheckedException("Failed to marshal response error, " +
+            "see node log for details."));
 
         flusher = new IgniteThread(new GridWorker(ctx.gridName(), "grid-data-loader-flusher", log) {
             @Override protected void body() throws InterruptedException {
@@ -332,7 +332,7 @@ public class DataStreamProcessor<K, V> extends GridProcessorAdapter {
         byte[] errBytes;
 
         try {
-            errBytes = err != null ? MarshallerUtils.marshal(marsh, err, ctx.gridName()) : null;
+            errBytes = err != null ? MarshallerUtils.marshal(ctx.gridName(), marsh, err) : null;
         }
         catch (Exception e) {
             U.error(log, "Failed to marshal error [err=" + err + ", marshErr=" + e + ']', e);

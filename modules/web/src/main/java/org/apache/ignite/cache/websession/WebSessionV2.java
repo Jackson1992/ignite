@@ -358,7 +358,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private byte[] marshal(final Object obj) throws IOException {
         if (marshaller != null) {
             try {
-                return MarshallerUtils.marshal(marshaller, obj, gridName);
+                return MarshallerUtils.marshal(gridName, marshaller, obj);
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);

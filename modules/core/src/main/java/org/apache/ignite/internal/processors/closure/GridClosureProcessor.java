@@ -1145,7 +1145,7 @@ public class GridClosureProcessor extends GridProcessorAdapter {
                         if (closureBytes == null) {
                             closure = c.job;
 
-                            closureBytes = MarshallerUtils.marshal(marsh, c.job, ctx.gridName());
+                            closureBytes = MarshallerUtils.marshal(ctx.gridName(), marsh, c.job);
                         }
 
                         if (c.job == closure)

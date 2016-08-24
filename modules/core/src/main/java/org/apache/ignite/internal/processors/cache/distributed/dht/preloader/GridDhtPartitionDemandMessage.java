@@ -184,7 +184,7 @@ public class GridDhtPartitionDemandMessage extends GridCacheMessage {
         super.prepareMarshal(ctx);
 
         if (topic != null)
-            topicBytes = MarshallerUtils.marshal(ctx.marshaller(), topic, ctx.gridName());
+            topicBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), topic);
     }
 
     /** {@inheritDoc} */

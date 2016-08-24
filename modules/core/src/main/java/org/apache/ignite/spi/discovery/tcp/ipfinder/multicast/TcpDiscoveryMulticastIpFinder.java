@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteLogger;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.IgniteInterruptedCheckedException;
 import org.apache.ignite.internal.util.tostring.GridToStringExclude;
 import org.apache.ignite.internal.util.typedef.F;
@@ -702,7 +701,7 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
         private AddressResponse(Collection<InetSocketAddress> addrs, final String gridName) throws IgniteCheckedException {
             this.addrs = addrs;
 
-            byte[] addrsData = MarshallerUtils.marshal(marsh, addrs, gridName);
+            byte[] addrsData = MarshallerUtils.marshal(gridName, marsh, addrs);
             data = new byte[U.IGNITE_HEADER.length + addrsData.length];
 
             if (data.length > MAX_DATA_LENGTH)

@@ -398,7 +398,7 @@ public class GridNearAtomicUpdateResponse extends GridCacheMessage implements Gr
         super.prepareMarshal(ctx);
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
 
         GridCacheContext cctx = ctx.cacheContext(cacheId);
 

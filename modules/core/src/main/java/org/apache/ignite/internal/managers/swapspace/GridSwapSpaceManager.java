@@ -412,7 +412,7 @@ public class GridSwapSpaceManager extends GridManagerAdapter<SwapSpaceSpi> {
      * @throws IgniteCheckedException If failed.
      */
     private byte[] marshal(Object obj) throws IgniteCheckedException {
-        return MarshallerUtils.marshal(marsh, obj, ctx.gridName());
+        return MarshallerUtils.marshal(ctx.gridName(), marsh, obj);
     }
 
     /**

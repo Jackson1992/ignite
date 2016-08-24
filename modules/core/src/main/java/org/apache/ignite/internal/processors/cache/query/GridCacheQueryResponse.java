@@ -125,7 +125,7 @@ public class GridCacheQueryResponse extends GridCacheMessage implements GridCach
         GridCacheContext cctx = ctx.cacheContext(cacheId);
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
 
         metaDataBytes = marshalCollection(metadata, cctx);
         dataBytes = marshalCollection(data, cctx);

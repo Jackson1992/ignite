@@ -203,7 +203,7 @@ public class GridDistributedLockResponse extends GridDistributedBaseMessage {
         prepareMarshalCacheObjects(vals, ctx.cacheContext(cacheId));
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
     }
 
     /** {@inheritDoc} */

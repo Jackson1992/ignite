@@ -1542,7 +1542,7 @@ public class CacheContinuousQueryHandler<K, V> implements GridContinuousHandler 
 
             depInfo = new GridDeploymentInfoBean(dep);
 
-            bytes = MarshallerUtils.marshal(ctx.config().getMarshaller(), obj, ctx.gridName());
+            bytes = MarshallerUtils.marshal(ctx.gridName(), ctx.config().getMarshaller(), obj);
         }
 
         /**

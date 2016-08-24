@@ -107,7 +107,7 @@ public class GridDhtAffinityAssignmentResponse extends GridCacheMessage {
         super.prepareMarshal(ctx);
 
         if (affAssignment != null)
-            affAssignmentBytes = MarshallerUtils.marshal(ctx.marshaller(), affAssignment, ctx.gridName());
+            affAssignmentBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), affAssignment);
     }
 
     /** {@inheritDoc} */

@@ -107,7 +107,7 @@ public class CacheInvokeDirectResult implements Message {
         key.prepareMarshal(ctx.cacheObjectContext());
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
 
         if (res != null)
             res.prepareMarshal(ctx.cacheObjectContext());

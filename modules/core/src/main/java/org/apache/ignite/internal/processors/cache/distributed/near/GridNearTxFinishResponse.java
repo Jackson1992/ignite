@@ -102,7 +102,7 @@ public class GridNearTxFinishResponse extends GridDistributedTxFinishResponse {
         super.prepareMarshal(ctx);
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+            errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
     }
 
     /** {@inheritDoc} */

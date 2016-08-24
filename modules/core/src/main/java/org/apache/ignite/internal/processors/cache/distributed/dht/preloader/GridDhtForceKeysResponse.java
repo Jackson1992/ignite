@@ -172,7 +172,7 @@ public class GridDhtForceKeysResponse extends GridCacheMessage implements GridCa
                 info.marshal(cctx);
         }
 
-        errBytes = MarshallerUtils.marshal(ctx.marshaller(), err, ctx.gridName());
+        errBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), err);
     }
 
     /** {@inheritDoc} */

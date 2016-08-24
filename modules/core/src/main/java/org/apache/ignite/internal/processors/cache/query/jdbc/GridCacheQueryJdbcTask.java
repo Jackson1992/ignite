@@ -131,13 +131,13 @@ public class GridCacheQueryJdbcTask extends ComputeTaskAdapter<byte[], byte[]> {
             if (res.getException() == null) {
                 status = 0;
 
-                bytes = MarshallerUtils.marshal(MARSHALLER, res.getData(), ignite.name());
+                bytes = MarshallerUtils.marshal(ignite.name(), MARSHALLER, res.getData());
             }
             else {
                 status = 1;
 
-                bytes = MarshallerUtils.marshal(MARSHALLER, new SQLException(res.getException().getMessage()),
-                        ignite.name());
+                bytes = MarshallerUtils.marshal(ignite.name(), MARSHALLER, new SQLException(res.getException().getMessage())
+                );
             }
 
             byte[] packet = new byte[bytes.length + 1];

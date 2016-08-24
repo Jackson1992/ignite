@@ -154,7 +154,7 @@ public class GridCacheQueryJdbcMetadataTask extends ComputeTaskAdapter<String, b
 
                 status = 0;
 
-                data = MarshallerUtils.marshal(MARSHALLER, F.asList(schemasMap, indexesInfo), ignite.name());
+                data = MarshallerUtils.marshal(ignite.name(), MARSHALLER, F.asList(schemasMap, indexesInfo));
             }
             catch (Throwable t) {
                 U.error(log, "Failed to get metadata for JDBC.", t);
@@ -164,7 +164,7 @@ public class GridCacheQueryJdbcMetadataTask extends ComputeTaskAdapter<String, b
                 status = 1;
 
                 try {
-                    data = MarshallerUtils.marshal(MARSHALLER, err, ignite.name());
+                    data = MarshallerUtils.marshal(ignite.name(), MARSHALLER, err);
                 }
                 catch (IgniteCheckedException e) {
                     throw new IgniteException(e);

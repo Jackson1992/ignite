@@ -98,7 +98,7 @@ public class IgfsDeleteMessage extends IgfsCommunicationMessage {
         super.prepareMarshal(marsh, kernalCtx);
 
         if (err != null)
-            errBytes = MarshallerUtils.marshal(marsh, err, kernalCtx.gridName());
+            errBytes = MarshallerUtils.marshal(kernalCtx.gridName(), marsh, err);
     }
 
     /** {@inheritDoc} */

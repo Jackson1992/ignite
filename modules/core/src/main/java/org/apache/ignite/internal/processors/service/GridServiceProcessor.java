@@ -453,7 +453,7 @@ public class GridServiceProcessor extends GridProcessorAdapter {
             LazyServiceConfiguration cfg0;
 
             try {
-                byte[] srvcBytes = MarshallerUtils.marshal(marsh, cfg.getService(), ctx.gridName());
+                byte[] srvcBytes = MarshallerUtils.marshal(ctx.gridName(), marsh, cfg.getService());
 
                 cfg0 = new LazyServiceConfiguration(cfg, srvcBytes);
             }
@@ -1134,7 +1134,7 @@ public class GridServiceProcessor extends GridProcessorAdapter {
             Service svc = cfg.getService();
 
             try {
-                byte[] bytes = MarshallerUtils.marshal(m, svc, ctx.gridName());
+                byte[] bytes = MarshallerUtils.marshal(ctx.gridName(), m, svc);
 
                 Service cp = MarshallerUtils.unmarshal(m, bytes, U.resolveClassLoader(svc.getClass().getClassLoader(),
                     ctx.config()), ctx.gridName());

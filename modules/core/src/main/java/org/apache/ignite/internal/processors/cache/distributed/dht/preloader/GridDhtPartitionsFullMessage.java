@@ -134,10 +134,10 @@ public class GridDhtPartitionsFullMessage extends GridDhtPartitionsAbstractMessa
         super.prepareMarshal(ctx);
 
         if (parts != null && partsBytes == null)
-            partsBytes = MarshallerUtils.marshal(ctx.marshaller(), parts, ctx.gridName());
+            partsBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), parts);
 
         if (partCntrs != null)
-            partCntrsBytes = MarshallerUtils.marshal(ctx.marshaller(), partCntrs, ctx.gridName());
+            partCntrsBytes = MarshallerUtils.marshal(ctx.gridName(), ctx.marshaller(), partCntrs);
     }
 
     /**

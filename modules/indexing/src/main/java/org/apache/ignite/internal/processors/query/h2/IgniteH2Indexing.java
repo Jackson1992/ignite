@@ -1548,7 +1548,7 @@ public class IgniteH2Indexing implements GridQueryIndexing {
                             U.resolveClassLoader(ctx.config()), ctx.gridName());
                     }
                     else
-                        return MarshallerUtils.unmarshal(marshaller, bytes, null);
+                        return marshaller.unmarshal(bytes, null);
                 }
             };
     }

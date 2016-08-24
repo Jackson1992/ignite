@@ -132,23 +132,6 @@ public final class MarshallerUtils {
     }
 
     /**
-     * Unmarshal object.
-     * <p>Use only when grid name is not available, f.e. in tests.</p>
-     *
-     * @param marshaller Marshaller.
-     * @param arr Bianry data.
-     * @param clsLdr Class loader.
-     * @param <T> Target type.
-     * @return Unmarshalled object.
-     * @throws IgniteCheckedException If fail.
-     */
-    public static <T> T unmarshal(final Marshaller marshaller, byte[] arr, @Nullable ClassLoader clsLdr)
-        throws IgniteCheckedException {
-        // This method used to keep marshaller usages in one place.
-        return marshaller.unmarshal(arr, clsLdr);
-    }
-
-    /**
      * Unmarshal object and set grid name thread local.
      *
      * @param marshaller Marshaller.

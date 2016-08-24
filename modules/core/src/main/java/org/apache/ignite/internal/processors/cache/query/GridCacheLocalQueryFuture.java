@@ -113,13 +113,13 @@ public class GridCacheLocalQueryFuture<K, V, R> extends GridCacheQueryFutureAdap
 
             Marshaller marsh = cctx.marshaller();
 
-            IgniteReducer<Object, Object> rdc = qry.reducer() != null
-                    ? MarshallerUtils.clone(marsh, qry.reducer(), U.resolveClassLoader(cctx.gridConfig()), cctx.gridName())
-                    : null;
+            IgniteReducer<Object, Object> rdc = qry.reducer() != null ?
+                MarshallerUtils.marshalUnmarshal(cctx.gridName(), marsh, qry.reducer(),
+                    U.resolveClassLoader(cctx.gridConfig())) : null;
 
-            IgniteClosure<Object, Object> trans = qry.transform() != null
-                    ? MarshallerUtils.clone(marsh, qry.transform(), U.resolveClassLoader(cctx.gridConfig()), cctx.gridName())
-                    : null;
+            IgniteClosure<Object, Object> trans = qry.transform() != null ?
+                MarshallerUtils.marshalUnmarshal(cctx.gridName(), marsh, qry.transform(),
+                    U.resolveClassLoader(cctx.gridConfig())) : null;
 
             return new GridCacheQueryInfo(
                 true,

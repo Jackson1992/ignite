@@ -106,7 +106,6 @@ import org.apache.ignite.internal.util.future.GridFinishedFuture;
 import org.apache.ignite.internal.util.future.GridFutureAdapter;
 import org.apache.ignite.internal.util.lang.IgniteOutClosureX;
 import org.apache.ignite.internal.util.tostring.GridToStringInclude;
-import org.apache.ignite.internal.util.typedef.CIX1;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.X;
 import org.apache.ignite.internal.util.typedef.internal.CU;
@@ -3398,8 +3397,8 @@ public class GridCacheProcessor extends GridProcessorAdapter {
                         if (ldr == null)
                             ldr = val.getCacheStoreFactory().getClass().getClassLoader();
 
-                        MarshallerUtils.clone(marshaller, val.getCacheStoreFactory(),
-                            U.resolveClassLoader(ldr, ctx.config()), ctx.gridName());
+                        MarshallerUtils.marshalUnmarshal(ctx.gridName(), marshaller, val.getCacheStoreFactory(),
+                            U.resolveClassLoader(ldr, ctx.config()));
                     }
                     catch (IgniteCheckedException e) {
                         throw new IgniteCheckedException("Failed to validate cache configuration. " +
@@ -3408,7 +3407,8 @@ public class GridCacheProcessor extends GridProcessorAdapter {
                 }
 
                 try {
-                    return MarshallerUtils.clone(marshaller, val, U.resolveClassLoader(ctx.config()), ctx.gridName());
+                    return MarshallerUtils.marshalUnmarshal(ctx.gridName(), marshaller, val,
+                        U.resolveClassLoader(ctx.config()));
                 }
                 catch (IgniteCheckedException e) {
                     throw new IgniteCheckedException("Failed to validate cache configuration " +

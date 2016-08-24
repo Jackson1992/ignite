@@ -520,8 +520,7 @@ public class GridTcpRestParser implements GridNioParser {
         else {
             GridClientMarshaller marsh = marshaller(ses);
 
-            msg = MarshallerUtils.unmarshal(marsh, state.buffer().toByteArray(),
-                ses.gridName());
+            msg = marsh.unmarshal(state.buffer().toByteArray());
 
             msg.requestId(state.header().reqId());
             msg.clientId(state.header().clientId());

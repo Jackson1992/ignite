@@ -1151,10 +1151,12 @@ public class GridClosureProcessor extends GridProcessorAdapter {
                         if (c.job == closure)
                             c.job = MarshallerUtils.unmarshal(marsh, closureBytes, U.resolveClassLoader(ctx.config()), ctx.gridName());
                         else
-                            c.job = MarshallerUtils.clone(marsh, c.job, U.resolveClassLoader(ctx.config()), ctx.gridName());
+                            c.job = MarshallerUtils.marshalUnmarshal(ctx.gridName(), marsh, c.job,
+                                U.resolveClassLoader(ctx.config()));
                     }
                     else
-                        job = MarshallerUtils.clone(marsh, job, U.resolveClassLoader(ctx.config()), ctx.gridName());
+                        job = MarshallerUtils.marshalUnmarshal(ctx.gridName(), marsh, job,
+                            U.resolveClassLoader(ctx.config()));
                 }
                 else
                     hadLocNode = true;

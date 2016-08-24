@@ -540,8 +540,7 @@ public class GridClientNioTcpConnection extends GridClientConnection {
             GridClientMessage res0 = res;
 
             if (res instanceof GridRouterResponse) {
-                res0 = MarshallerUtils.unmarshal(marsh, ((GridRouterResponse)res).body(),
-                    ses.gridName());
+                res0 = marsh.unmarshal(((GridRouterResponse)res).body());
 
                 res0.requestId(res.requestId());
                 res0.clientId(res.clientId());

@@ -21,10 +21,8 @@ import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.internal.GridKernalContext;
 import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.internal.LocalGridName;
-import org.apache.ignite.internal.client.marshaller.GridClientMarshaller;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -180,16 +178,16 @@ public final class MarshallerUtils {
     /**
      * Marshal and unmarshal object.
      *
+     * @param <T> Target type.
+     * @param gridName Grid name.
      * @param marshaller Marshaller.
      * @param obj Object to clone.
      * @param clsLdr Class loader.
-     * @param gridName Grid name.
-     * @param <T> Target type.
      * @return Deserialized value.
      * @throws IgniteCheckedException If fail.
      */
-    public static <T> T clone(final Marshaller marshaller, T obj, @Nullable ClassLoader clsLdr,
-        final String gridName) throws IgniteCheckedException {
+    public static <T> T marshalUnmarshal(final String gridName, final Marshaller marshaller, T obj,
+        @Nullable ClassLoader clsLdr) throws IgniteCheckedException {
         final LocalGridName gridNameTl = gridName();
 
         final String gridNameStr = gridNameTl.getGridName();
@@ -199,32 +197,6 @@ public final class MarshallerUtils {
             gridNameTl.setGridName(true, gridName);
 
             return marshaller.unmarshal(marshaller.marshal(obj), clsLdr);
-        } finally {
-            gridNameTl.setGridName(init, gridNameStr);
-        }
-    }
-
-    /**
-     * Unmarshal object and set grid name thread local.
-     *
-     * @param gridMarshaller Grid marshaller.
-     * @param bytes Binary data.
-     * @param gridName Grid name.
-     * @param <T> Target type.
-     * @return Deserialized value.
-     * @throws IOException If fail.
-     */
-    public static <T> T unmarshal(GridClientMarshaller gridMarshaller, byte[] bytes,
-        String gridName) throws IOException {
-        final LocalGridName gridNameTl = gridName();
-
-        final String gridNameStr = gridNameTl.getGridName();
-        final boolean init = gridNameTl.isSet();
-
-        try {
-            gridNameTl.setGridName(true, gridName);
-
-            return gridMarshaller.unmarshal(bytes);
         } finally {
             gridNameTl.setGridName(init, gridNameStr);
         }

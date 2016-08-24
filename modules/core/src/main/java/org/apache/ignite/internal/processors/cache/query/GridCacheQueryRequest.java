@@ -350,10 +350,11 @@ public class GridCacheQueryRequest extends GridCacheMessage implements GridCache
     void beforeLocalExecution(GridCacheContext ctx) throws IgniteCheckedException {
         Marshaller marsh = ctx.marshaller();
 
-        rdc = rdc != null ? MarshallerUtils.clone(marsh, rdc,
-            U.resolveClassLoader(ctx.gridConfig()), ctx.gridName()) : null;
-        trans = trans != null ? MarshallerUtils.clone(marsh, trans,
-            U.resolveClassLoader(ctx.gridConfig()), ctx.gridName()) : null;
+        rdc = rdc != null ? MarshallerUtils.marshalUnmarshal(ctx.gridName(), marsh, rdc,
+            U.resolveClassLoader(ctx.gridConfig())) : null;
+
+        trans = trans != null ? MarshallerUtils.marshalUnmarshal(ctx.gridName(), marsh, trans,
+            U.resolveClassLoader(ctx.gridConfig())) : null;
     }
 
     /**

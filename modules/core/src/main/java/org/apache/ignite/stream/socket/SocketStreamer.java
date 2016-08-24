@@ -24,7 +24,6 @@ import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteDataStreamer;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.IgniteLogger;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.util.nio.GridBufferedParser;
 import org.apache.ignite.internal.util.nio.GridDelimitedParser;
 import org.apache.ignite.internal.util.nio.GridNioCodecFilter;
@@ -222,7 +221,7 @@ public class SocketStreamer<T, K, V> extends StreamAdapter<T, K, V> {
         /** {@inheritDoc} */
         @Override public T convert(byte[] msg, final String gridName) {
             try {
-                return MarshallerUtils.unmarshal(MARSH, msg, null, gridName);
+                return MarshallerUtils.unmarshal(gridName, MARSH, msg, null);
             }
             catch (IgniteCheckedException e) {
                 throw new IgniteException(e);

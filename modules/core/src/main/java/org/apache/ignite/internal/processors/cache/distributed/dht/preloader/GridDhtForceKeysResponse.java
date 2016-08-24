@@ -191,8 +191,8 @@ public class GridDhtForceKeysResponse extends GridCacheMessage implements GridCa
         }
 
         if (errBytes != null) {
-            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            err = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
     }
 

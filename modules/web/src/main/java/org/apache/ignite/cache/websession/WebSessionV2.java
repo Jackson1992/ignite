@@ -338,7 +338,7 @@ class WebSessionV2 implements HttpSession {
     @Nullable private <T> T unmarshal(final byte[] bytes) throws IOException {
         if (marshaller != null) {
             try {
-                return MarshallerUtils.unmarshal(marshaller, bytes, getClass().getClassLoader(), gridName);
+                return MarshallerUtils.unmarshal(gridName, marshaller, bytes, getClass().getClassLoader());
             }
             catch (IgniteCheckedException e) {
                 throw new IOException(e);

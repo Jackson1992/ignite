@@ -114,7 +114,7 @@ class StartRequestData implements Externalizable {
         assert prjPred == null;
         assert prjPredBytes != null;
 
-        prjPred = MarshallerUtils.unmarshal(marsh, prjPredBytes, ldr, kernalCtx.gridName());
+        prjPred = MarshallerUtils.unmarshal(kernalCtx.gridName(), marsh, prjPredBytes, ldr);
     }
 
     /**

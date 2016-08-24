@@ -387,8 +387,8 @@ class GridEventConsumeHandler implements GridContinuousHandler {
             if (dep == null)
                 throw new IgniteDeploymentCheckedException("Failed to obtain deployment for class: " + clsName);
 
-            filter = MarshallerUtils.unmarshal(ctx.config().getMarshaller(), filterBytes,
-                U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+            filter = MarshallerUtils.unmarshal(ctx.gridName(), ctx.config().getMarshaller(), filterBytes,
+                U.resolveClassLoader(dep.classLoader(), ctx.config()));
         }
     }
 
@@ -505,7 +505,7 @@ class GridEventConsumeHandler implements GridContinuousHandler {
             assert evt == null;
             assert bytes != null;
 
-            evt = MarshallerUtils.unmarshal(ctx.config().getMarshaller(), bytes, ldr, ctx.gridName());
+            evt = MarshallerUtils.unmarshal(ctx.gridName(), ctx.config().getMarshaller(), bytes, ldr);
         }
 
         /** {@inheritDoc} */

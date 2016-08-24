@@ -19,7 +19,6 @@ package org.apache.ignite.spi.discovery.tcp.messages;
 
 import java.util.UUID;
 
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.marshaller.Marshaller;
@@ -92,7 +91,7 @@ public class TcpDiscoveryCustomEventMessage extends TcpDiscoveryAbstractMessage 
     @Nullable public DiscoverySpiCustomMessage message(@NotNull Marshaller marsh, ClassLoader ldr,
         final String gridName) throws Throwable {
         if (msg == null) {
-            msg = MarshallerUtils.unmarshal(marsh, msgBytes, ldr, gridName);
+            msg = MarshallerUtils.unmarshal(gridName, marsh, msgBytes, ldr);
 
             assert msg != null;
         }

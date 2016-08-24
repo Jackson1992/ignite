@@ -320,21 +320,21 @@ public class GridCacheQueryRequest extends GridCacheMessage implements GridCache
         Marshaller marsh = ctx.marshaller();
 
         if (keyValFilterBytes != null) {
-            keyValFilter = MarshallerUtils.unmarshal(marsh, keyValFilterBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            keyValFilter = MarshallerUtils.unmarshal(ctx.gridName(), marsh, keyValFilterBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         if (rdcBytes != null)
-            rdc = MarshallerUtils.unmarshal(marsh, rdcBytes, ldr, ctx.gridName());
+            rdc = MarshallerUtils.unmarshal(ctx.gridName(), marsh, rdcBytes, ldr);
 
         if (transBytes != null) {
-            trans = MarshallerUtils.unmarshal(marsh, transBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            trans = MarshallerUtils.unmarshal(ctx.gridName(), marsh, transBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         if (argsBytes != null) {
-            args = MarshallerUtils.unmarshal(marsh, argsBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            args = MarshallerUtils.unmarshal(ctx.gridName(), marsh, argsBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
     }
 

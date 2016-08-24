@@ -68,7 +68,7 @@ public class HadoopMarshallerFilter extends GridNioFilterAdapter {
         assert msg instanceof byte[];
 
         // Always unmarshal with system classloader.
-        proceedMessageReceived(ses, MarshallerUtils.unmarshal(marshaller, (byte[])msg, null, ses.gridName()));
+        proceedMessageReceived(ses, MarshallerUtils.unmarshal(ses.gridName(), marshaller, (byte[])msg, null));
     }
 
     /** {@inheritDoc} */

@@ -192,8 +192,8 @@ public class GridCacheRawVersionedEntry<K, V> extends DataStreamerEntry implemen
         unmarshalKey(ctx, marsh);
 
         if (val == null && valBytes != null) {
-            val = MarshallerUtils.unmarshal(marsh, valBytes,
-                U.resolveClassLoader(ctx.kernalContext().config()), ctx.kernalContext().gridName());
+            val = MarshallerUtils.unmarshal(ctx.kernalContext().gridName(), marsh, valBytes,
+                U.resolveClassLoader(ctx.kernalContext().config()));
 
             val.finishUnmarshal(ctx, null);
         }
@@ -224,8 +224,8 @@ public class GridCacheRawVersionedEntry<K, V> extends DataStreamerEntry implemen
         if (key == null) {
             assert keyBytes != null;
 
-            key = MarshallerUtils.unmarshal(marsh, keyBytes,
-                U.resolveClassLoader(ctx.kernalContext().config()), ctx.kernalContext().gridName());
+            key = MarshallerUtils.unmarshal(ctx.kernalContext().gridName(), marsh, keyBytes,
+                U.resolveClassLoader(ctx.kernalContext().config()));
 
             key.finishUnmarshal(ctx, null);
         }

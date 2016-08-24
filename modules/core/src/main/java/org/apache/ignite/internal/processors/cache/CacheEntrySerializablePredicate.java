@@ -82,8 +82,8 @@ public class CacheEntrySerializablePredicate implements CacheEntryPredicate {
         assert p != null || bytes != null;
 
         if (p == null) {
-            p = MarshallerUtils.unmarshal(ctx.marshaller(), bytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            p = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), bytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
 
             p.finishUnmarshal(ctx, ldr);
         }

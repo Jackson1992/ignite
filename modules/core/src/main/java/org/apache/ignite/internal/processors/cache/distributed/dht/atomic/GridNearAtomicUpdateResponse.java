@@ -418,8 +418,8 @@ public class GridNearAtomicUpdateResponse extends GridCacheMessage implements Gr
         super.finishUnmarshal(ctx, ldr);
 
         if (errBytes != null) {
-            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            err = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         GridCacheContext cctx = ctx.cacheContext(cacheId);

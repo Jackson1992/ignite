@@ -193,8 +193,8 @@ public class GridDhtPartitionDemandMessage extends GridCacheMessage {
         super.finishUnmarshal(ctx, ldr);
 
         if (topicBytes != null) {
-            topic = MarshallerUtils.unmarshal(ctx.marshaller(), topicBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            topic = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), topicBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
     }
 

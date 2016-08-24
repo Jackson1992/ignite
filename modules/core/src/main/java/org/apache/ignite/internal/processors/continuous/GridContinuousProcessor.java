@@ -289,8 +289,8 @@ public class GridContinuousProcessor extends GridProcessorAdapter {
 
                 if (msg.data() == null && msg.dataBytes() != null) {
                     try {
-                        msg.data(MarshallerUtils.unmarshal(marsh, msg.dataBytes(),
-                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                        msg.data(MarshallerUtils.unmarshal(ctx.gridName(), marsh, msg.dataBytes(),
+                            U.resolveClassLoader(ctx.config())));
                     }
                     catch (IgniteCheckedException e) {
                         U.error(log, "Failed to process message (ignoring): " + msg, e);
@@ -735,8 +735,8 @@ public class GridContinuousProcessor extends GridProcessorAdapter {
 
                     if (msg.data() == null && msg.dataBytes() != null) {
                         try {
-                            msg.data(MarshallerUtils.unmarshal(marsh, msg.dataBytes(),
-                                U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                            msg.data(MarshallerUtils.unmarshal(ctx.gridName(), marsh, msg.dataBytes(),
+                                U.resolveClassLoader(ctx.config())));
                         }
                         catch (IgniteCheckedException e) {
                             U.error(log, "Failed to process message (ignoring): " + msg, e);

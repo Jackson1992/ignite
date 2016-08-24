@@ -407,8 +407,8 @@ public class GridJobWorker extends GridWorker implements GridTimeoutObject {
 
         try {
             if (job == null) {
-                job = MarshallerUtils.unmarshal(marsh, jobBytes,
-                    U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+                job = MarshallerUtils.unmarshal(ctx.gridName(), marsh, jobBytes,
+                    U.resolveClassLoader(dep.classLoader(), ctx.config()));
 
                 // No need to hold reference any more.
                 jobBytes = null;

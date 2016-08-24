@@ -156,7 +156,7 @@ public class GridCacheSqlQuery implements Message {
 
         assert paramsBytes != null;
 
-        params = MarshallerUtils.unmarshal(m, paramsBytes, U.resolveClassLoader(ctx.config()), ctx.gridName());
+        params = MarshallerUtils.unmarshal(ctx.gridName(), m, paramsBytes, U.resolveClassLoader(ctx.config()));
     }
 
     /** {@inheritDoc} */

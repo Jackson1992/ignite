@@ -111,8 +111,8 @@ public class GridNearTxFinishResponse extends GridDistributedTxFinishResponse {
         super.finishUnmarshal(ctx, ldr);
 
         if (errBytes != null) {
-            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            err = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
     }
 

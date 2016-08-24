@@ -1266,7 +1266,7 @@ class ServerImpl extends TcpDiscoveryImpl {
             if (credBytes == null)
                 return null;
 
-            return MarshallerUtils.unmarshal(spi.marsh, credBytes, null, spi.ignite().name());
+            return MarshallerUtils.unmarshal(spi.ignite().name(), spi.marsh, credBytes, null);
         }
         catch (IgniteCheckedException e) {
             throw new IgniteSpiException("Failed to unmarshal node security credentials: " + node.id(), e);
@@ -2379,8 +2379,8 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                         if (clientMsgWorker.clientNodeId.equals(node.id())) {
                             try {
-                                msg0 = MarshallerUtils.unmarshal(spi.marsh, msgBytes,
-                                    U.resolveClassLoader(spi.ignite().configuration()), spi.ignite().name());
+                                msg0 = MarshallerUtils.unmarshal(spi.ignite().name(), spi.marsh, msgBytes,
+                                    U.resolveClassLoader(spi.ignite().configuration()));
 
                                 prepareNodeAddedMessage(msg0, clientMsgWorker.clientNodeId, null, null, null);
 
@@ -3791,9 +3791,9 @@ class ServerImpl extends TcpDiscoveryImpl {
 
                             final IgniteConfiguration cfg = spi.ignite().configuration();
 
-                            SecurityContext coordSubj = MarshallerUtils.unmarshal(spi.marsh,
+                            SecurityContext coordSubj = MarshallerUtils.unmarshal(cfg.getGridName(), spi.marsh,
                                 node.<byte[]>attribute(IgniteNodeAttributes.ATTR_SECURITY_SUBJECT),
-                                U.resolveClassLoader(cfg), cfg.getGridName());
+                                U.resolveClassLoader(cfg));
 
                             if (!permissionsEqual(coordSubj.subject().permissions(), subj.subject().permissions())) {
                                 // Node has not pass authentication.

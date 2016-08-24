@@ -182,8 +182,8 @@ public class GridDhtAtomicUpdateResponse extends GridCacheMessage implements Gri
 
         finishUnmarshalCacheObjects(nearEvicted, cctx, ldr);
 
-        err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
-            U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+        err = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), errBytes,
+            U.resolveClassLoader(ldr, ctx.gridConfig()));
     }
 
     /** {@inheritDoc} */

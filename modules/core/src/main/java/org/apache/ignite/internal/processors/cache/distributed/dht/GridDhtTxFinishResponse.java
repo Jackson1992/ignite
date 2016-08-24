@@ -122,8 +122,8 @@ public class GridDhtTxFinishResponse extends GridDistributedTxFinishResponse {
         super.finishUnmarshal(ctx, ldr);
 
         if (checkCommittedErrBytes != null) {
-            checkCommittedErr = MarshallerUtils.unmarshal(ctx.marshaller(), checkCommittedErrBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            checkCommittedErr = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), checkCommittedErrBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
     }
 

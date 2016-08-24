@@ -83,7 +83,7 @@ public class GridCacheQueryJdbcTask extends ComputeTaskAdapter<byte[], byte[]> {
         try {
             assert arg != null;
 
-            Map<String, Object> args = MarshallerUtils.unmarshal(MARSHALLER, arg, null, ignite.name());
+            Map<String, Object> args = MarshallerUtils.unmarshal(ignite.name(), MARSHALLER, arg, null);
 
             boolean first = true;
 

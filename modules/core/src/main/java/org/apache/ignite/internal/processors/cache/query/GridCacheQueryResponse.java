@@ -148,8 +148,8 @@ public class GridCacheQueryResponse extends GridCacheMessage implements GridCach
         super.finishUnmarshal(ctx, ldr);
 
         if (errBytes != null) {
-            err = MarshallerUtils.unmarshal(ctx.marshaller(), errBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            err = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), errBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         metadata = unmarshalCollection(metaDataBytes, ctx, ldr);

@@ -160,16 +160,16 @@ public class GridDhtPartitionsFullMessage extends GridDhtPartitionsAbstractMessa
         super.finishUnmarshal(ctx, ldr);
 
         if (partsBytes != null && parts == null) {
-            parts = MarshallerUtils.unmarshal(ctx.marshaller(), partsBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            parts = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), partsBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         if (parts == null)
             parts = new HashMap<>();
 
         if (partCntrsBytes != null && partCntrs == null) {
-            partCntrs = MarshallerUtils.unmarshal(ctx.marshaller(), partCntrsBytes,
-                U.resolveClassLoader(ldr, ctx.gridConfig()), ctx.gridName());
+            partCntrs = MarshallerUtils.unmarshal(ctx.gridName(), ctx.marshaller(), partCntrsBytes,
+                U.resolveClassLoader(ldr, ctx.gridConfig()));
         }
 
         if (partCntrs == null)

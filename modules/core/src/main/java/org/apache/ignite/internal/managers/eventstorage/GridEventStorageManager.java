@@ -892,12 +892,12 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
 
                 try {
                     if (res.eventsBytes() != null)
-                        res.events(MarshallerUtils.<Collection<Event>>unmarshal(marsh, res.eventsBytes(),
-                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                        res.events(MarshallerUtils.<Collection<Event>>unmarshal(ctx.gridName(), marsh, res.eventsBytes(),
+                            U.resolveClassLoader(ctx.config())));
 
                     if (res.exceptionBytes() != null)
-                        res.exception(MarshallerUtils.<Throwable>unmarshal(marsh, res.exceptionBytes(),
-                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                        res.exception(MarshallerUtils.<Throwable>unmarshal(ctx.gridName(), marsh, res.exceptionBytes(),
+                            U.resolveClassLoader(ctx.config())));
                 }
                 catch (IgniteCheckedException e) {
                     U.error(log, "Failed to unmarshal events query response: " + msg, e);
@@ -1090,8 +1090,8 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
 
                 try {
                     if (req.responseTopicBytes() != null) {
-                        req.responseTopic(MarshallerUtils.unmarshal(marsh, req.responseTopicBytes(),
-                            U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                        req.responseTopic(MarshallerUtils.unmarshal(ctx.gridName(), marsh, req.responseTopicBytes(),
+                            U.resolveClassLoader(ctx.config())));
                     }
 
                     GridDeployment dep = ctx.deploy().getGlobalDeployment(
@@ -1108,8 +1108,8 @@ public class GridEventStorageManager extends GridManagerAdapter<EventStorageSpi>
                         throw new IgniteDeploymentCheckedException("Failed to obtain deployment for event filter " +
                             "(is peer class loading turned on?): " + req);
 
-                    filter = MarshallerUtils.unmarshal(marsh, req.filter(),
-                        U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+                    filter = MarshallerUtils.unmarshal(ctx.gridName(), marsh, req.filter(),
+                        U.resolveClassLoader(dep.classLoader(), ctx.config()));
 
                     // Resource injection.
                     ctx.resource().inject(dep, dep.deployedClass(req.filterClassName()), filter);

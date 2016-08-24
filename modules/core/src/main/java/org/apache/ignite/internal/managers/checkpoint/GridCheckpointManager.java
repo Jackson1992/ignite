@@ -339,8 +339,8 @@ public class GridCheckpointManager extends GridManagerAdapter<CheckpointSpi> {
 
             // Always deserialize with task/session class loader.
             if (data != null) {
-                state = MarshallerUtils.unmarshal(marsh, data,
-                    U.resolveClassLoader(ses.getClassLoader(), ctx.config()), ctx.gridName());
+                state = MarshallerUtils.unmarshal(ctx.gridName(), marsh, data,
+                    U.resolveClassLoader(ses.getClassLoader(), ctx.config()));
             }
 
             record(EVT_CHECKPOINT_LOADED, key);

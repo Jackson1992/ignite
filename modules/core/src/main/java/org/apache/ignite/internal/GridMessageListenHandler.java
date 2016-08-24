@@ -194,12 +194,12 @@ public class GridMessageListenHandler implements GridContinuousHandler {
         ClassLoader ldr = dep.classLoader();
 
         if (topicBytes != null) {
-            topic = MarshallerUtils.unmarshal(ctx.config().getMarshaller(), topicBytes,
-                U.resolveClassLoader(ldr, ctx.config()), ctx.gridName());
+            topic = MarshallerUtils.unmarshal(ctx.gridName(), ctx.config().getMarshaller(), topicBytes,
+                U.resolveClassLoader(ldr, ctx.config()));
         }
 
-        pred = MarshallerUtils.unmarshal(ctx.config().getMarshaller(), predBytes,
-            U.resolveClassLoader(ldr, ctx.config()), ctx.gridName());
+        pred = MarshallerUtils.unmarshal(ctx.gridName(), ctx.config().getMarshaller(), predBytes,
+            U.resolveClassLoader(ldr, ctx.config()));
     }
 
     /** {@inheritDoc} */

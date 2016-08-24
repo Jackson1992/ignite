@@ -576,7 +576,7 @@ public class CacheJdbcBlobStore<K, V> extends CacheStoreAdapter<K, V> {
         if (bytes == null || bytes.length == 0)
             return null;
 
-        return MarshallerUtils.unmarshal(marsh, bytes, getClass().getClassLoader(), ignite.name());
+        return MarshallerUtils.unmarshal(ignite.name(), marsh, bytes, getClass().getClassLoader());
     }
 
     /**

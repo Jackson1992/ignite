@@ -723,8 +723,8 @@ public class TcpDiscoveryMulticastIpFinder extends TcpDiscoveryVmIpFinder {
 
             this.data = data;
 
-            addrs = MarshallerUtils.unmarshal(marsh,
-                    Arrays.copyOfRange(data, U.IGNITE_HEADER.length, data.length), null, gridName);
+            addrs = MarshallerUtils.unmarshal(gridName, marsh,
+                    Arrays.copyOfRange(data, U.IGNITE_HEADER.length, data.length), null);
         }
 
         /**

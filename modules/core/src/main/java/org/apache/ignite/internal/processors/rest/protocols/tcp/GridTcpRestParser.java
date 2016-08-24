@@ -723,7 +723,7 @@ public class GridTcpRestParser implements GridNioParser {
         assert bytes != null;
 
         if ((flags & SERIALIZED_FLAG) != 0)
-            return MarshallerUtils.unmarshal(jdkMarshaller, bytes, null, gridName);
+            return MarshallerUtils.unmarshal(gridName, jdkMarshaller, bytes, null);
 
         int masked = flags & 0xff00;
 

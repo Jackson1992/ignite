@@ -184,8 +184,8 @@ class GridDeploymentCommunication {
 
         if (req.responseTopic() == null) {
             try {
-                req.responseTopic(MarshallerUtils.unmarshal(marsh, req.responseTopicBytes(),
-                    U.resolveClassLoader(ctx.config()), ctx.gridName()));
+                req.responseTopic(MarshallerUtils.unmarshal(ctx.gridName(), marsh, req.responseTopicBytes(),
+                    U.resolveClassLoader(ctx.config())));
             }
             catch (IgniteCheckedException e) {
                 U.error(log, "Failed to process deployment request (will ignore): " + req, e);

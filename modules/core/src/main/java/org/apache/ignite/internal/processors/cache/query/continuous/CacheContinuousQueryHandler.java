@@ -1560,8 +1560,8 @@ public class CacheContinuousQueryHandler<K, V> implements GridContinuousHandler 
             if (dep == null)
                 throw new IgniteDeploymentCheckedException("Failed to obtain deployment for class: " + clsName);
 
-            return MarshallerUtils.unmarshal(ctx.config().getMarshaller(), bytes,
-                U.resolveClassLoader(dep.classLoader(), ctx.config()), ctx.gridName());
+            return MarshallerUtils.unmarshal(ctx.gridName(), ctx.config().getMarshaller(), bytes,
+                U.resolveClassLoader(dep.classLoader(), ctx.config()));
         }
 
         /** {@inheritDoc} */

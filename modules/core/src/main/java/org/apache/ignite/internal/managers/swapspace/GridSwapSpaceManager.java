@@ -401,7 +401,7 @@ public class GridSwapSpaceManager extends GridManagerAdapter<SwapSpaceSpi> {
         if (swapBytes == null)
             return null;
 
-        return MarshallerUtils.unmarshal(marsh, swapBytes, ldr != null ? ldr : U.gridClassLoader(), ctx.gridName());
+        return MarshallerUtils.unmarshal(ctx.gridName(), marsh, swapBytes, ldr != null ? ldr : U.gridClassLoader());
     }
 
     /**

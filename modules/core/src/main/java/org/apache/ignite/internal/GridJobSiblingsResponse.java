@@ -76,7 +76,7 @@ public class GridJobSiblingsResponse implements Message {
         assert marsh != null;
 
         if (siblingsBytes != null)
-            siblings = MarshallerUtils.unmarshal(marsh, siblingsBytes, null, ctx.gridName());
+            siblings = MarshallerUtils.unmarshal(ctx.gridName(), marsh, siblingsBytes, null);
     }
 
     /** {@inheritDoc} */

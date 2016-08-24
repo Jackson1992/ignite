@@ -84,7 +84,8 @@ public final class MarshallerUtils {
             gridNameTl.setGridName(true, gridName);
 
             return marshaller.marshal(obj);
-        } finally {
+        }
+        finally {
             gridNameTl.setGridName(init, gridNameStr);
         }
     }

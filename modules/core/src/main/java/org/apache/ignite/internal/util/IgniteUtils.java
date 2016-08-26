@@ -490,12 +490,12 @@ public abstract class IgniteUtils {
     private static Method toStringMtd;
 
     /** Empty local Ignite name. */
-    private static final String CUR_IGNITE_NAME_EMPTY = new String();
+    private static final String LOC_IGNITE_NAME_EMPTY = new String();
 
     /** Local Ignite name thread local. */
-    private static ThreadLocal<String> LOC_IGNITE_NAME = new ThreadLocal<String>() {
+    private static final ThreadLocal<String> LOC_IGNITE_NAME = new ThreadLocal<String>() {
         @Override protected String initialValue() {
-            return CUR_IGNITE_NAME_EMPTY;
+            return LOC_IGNITE_NAME_EMPTY;
         }
     };
 
@@ -9583,7 +9583,7 @@ public abstract class IgniteUtils {
      */
     @SuppressWarnings("StringEquality")
     public static boolean isCurrentIgniteNameSet(@Nullable String name) {
-        return name != CUR_IGNITE_NAME_EMPTY;
+        return name != LOC_IGNITE_NAME_EMPTY;
     }
 
     /**
